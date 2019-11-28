@@ -1,5 +1,14 @@
 !! Attention !! This library isn't already done. Soon as possible, I'll finish it.
 
+#### To Do List
+
+* [ ] Basic repository
+* [ ] Cache repository
+* [ ] Artisan commands
+* [ ] Check Coding Style (PSR-1 & PSR-12)
+* [ ] Run PHPMD
+* [ ] Run PHPStan
+
 #### DataLayer
 
 > A simplest abstraction layer for eloquent models
@@ -9,15 +18,6 @@
 * More instictive;
 * Improves more easily readable;
 * Easily caching results.
-
-#### To Do List
-
-* [ ] Basic repository
-* [ ] Cache repository
-* [ ] Artisan commands
-* [ ] Coding Style (PSR-1 & PSR-12)
-* [ ] PHPMD
-* [ ] PHPStan
 
 #### Pre-requisites
 
