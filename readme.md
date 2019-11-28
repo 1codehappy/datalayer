@@ -1,4 +1,4 @@
-##!! Attention !! This library isn't already done. Soon as possible, I'll finish it.
+!! Attention !! This library isn't already done. Soon as possible, I'll finish it.
 
 #### DataLayer
 
@@ -28,7 +28,7 @@
 
 See our [wiki](https://github.com/c0dehappy/datalayer/wiki) to more information.
 
-To contribute, read then [rules](https://github.com/c0dehappy/datalayer/blob/master/contributing.md)
+To contribute, read the [rules](https://github.com/c0dehappy/datalayer/blob/master/contributing.md).
 
 #### License
 
