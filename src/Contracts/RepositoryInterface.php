@@ -69,4 +69,11 @@ interface RepositoryInterface
      * @return \Illuminate\Support\Collection
      */
     public function distinct(): Collection;
+
+    /**
+     * Restore from trash (Soft Delete)
+     *
+     * @return bool|null
+     */
+    public function restoreFromTrash(): ?bool;
 }

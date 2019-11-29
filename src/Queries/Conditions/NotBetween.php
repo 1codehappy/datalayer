@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
-class Between extends AbstractCondition
+class NotBetween extends AbstractCondition
 {
     /**
      * {@inheritDoc}
@@ -33,7 +33,7 @@ class Between extends AbstractCondition
             is_array($params[1][0]) === false &&
             is_array($params[1][1]) === false
         ) {
-            return $this->builder->whereBetween(DB::raw($params[0]), [
+            return $this->builder->whereNotBetween(DB::raw($params[0]), [
                 $params[1],
                 $lastParam,
             ]);
@@ -43,7 +43,7 @@ class Between extends AbstractCondition
             is_array($params[1]) === false &&
             is_array($params[2]) === false
         ) {
-            return $this->builder->whereBetween(DB::raw($params[0]), [
+            return $this->builder->whereNotBetween(DB::raw($params[0]), [
                 $params[1],
                 $params[2],
             ], $lastParam);

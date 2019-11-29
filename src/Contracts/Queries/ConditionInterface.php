@@ -10,9 +10,9 @@ interface ConditionInterface
      * @param string $column
      * @param mixed  $value
      * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
+     * @return mixed
      */
-    public function equals(string $column, $value, string $operator = 'AND'): ConditionInterface;
+    public function equals(string $column, $value, string $operator = 'AND');
 
     /**
      * Isn't equal to
@@ -20,9 +20,9 @@ interface ConditionInterface
      * @param string $column
      * @param mixed  $value
      * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
+     * @return mixed
      */
-    public function not(string $column, $value, string $operator = 'AND'): ConditionInterface;
+    public function not(string $column, $value, string $operator = 'AND');
 
     /**
      * Like
@@ -30,9 +30,9 @@ interface ConditionInterface
      * @param string $column
      * @param mixed  $value
      * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
+     * @return mixed
      */
-    public function like(string $column, $value, string $operator = 'AND'): ConditionInterface;
+    public function like(string $column, $value, string $operator = 'AND');
 
     /**
      * Not like
@@ -40,9 +40,9 @@ interface ConditionInterface
      * @param string $column
      * @param mixed  $value
      * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
+     * @return mixed
      */
-    public function notLike(string $column, $value, string $operator = 'AND'): ConditionInterface;
+    public function notLike(string $column, $value, string $operator = 'AND');
 
     /**
      * Is greater Than
@@ -50,9 +50,9 @@ interface ConditionInterface
      * @param string $column
      * @param mixed  $value
      * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
+     * @return mixed
      */
-    public function isGreaterThan(string $column, $value, string $operator = 'AND'): ConditionInterface;
+    public function isGreaterThan(string $column, $value, string $operator = 'AND');
 
     /**
      * Is greater than equal to
@@ -60,9 +60,9 @@ interface ConditionInterface
      * @param string $column
      * @param mixed  $value
      * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
+     * @return mixed
      */
-    public function isGreaterThanEqualTo(string $column, $value, string $operator = 'AND'): ConditionInterface;
+    public function isGreaterThanEqualTo(string $column, $value, string $operator = 'AND');
 
     /**
      * Is less than
@@ -70,9 +70,9 @@ interface ConditionInterface
      * @param string $column
      * @param mixed  $value
      * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
+     * @return mixed
      */
-    public function isLessThan(string $column, $value, string $operator = 'AND'): ConditionInterface;
+    public function isLessThan(string $column, $value, string $operator = 'AND');
 
     /**
      * Is less than equal to
@@ -80,32 +80,32 @@ interface ConditionInterface
      * @param string $column
      * @param mixed  $value
      * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
+     * @return mixed
      */
-    public function isLessThanEqualTo(string $column, $value, string $operator = 'AND'): ConditionInterface;
+    public function isLessThanEqualTo(string $column, $value, string $operator = 'AND');
 
     /**
      * Is between value1 and value2
      *
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
+     * @return mixed
      */
-    public function isBetween(): ConditionInterface;
+    public function isBetween();
 
     /**
      * Is null
      *
      * @param string $column
      * @param string $operator
-     @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
+     @return mixed
      */
-    public function isNull(string $column, string $operator = 'AND'): ConditionInterface;
+    public function isNull(string $column, string $operator = 'AND');
 
     /**
      * Is not null
      *
      * @param string $column
      * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
+     * @return mixed
      */
-    public function isNotNull(string $column, string $operator = 'AND'): ConditionInterface;
+    public function isNotNull(string $column, string $operator = 'AND');
 }

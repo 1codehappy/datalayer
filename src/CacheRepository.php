@@ -9,7 +9,6 @@ use Illuminate\Support\Collection;
 use CodeHappy\DataLayer\Contracts\AggregationInterface;
 use CodeHappy\DataLayer\Contracts\RepositoryInterface;
 use CodeHappy\DataLayer\Repository;
-use CodeHappy\DataLayer\Traits\Cacheable;
 use CodeHappy\DataLayer\Traits\Caching\Aggregable;
 use CodeHappy\DataLayer\Traits\Queryable;
 
@@ -17,7 +16,6 @@ abstract class CacheRepository implements
     RepositoryInterface,
     AggregationInterface
 {
-    use Cacheable;
     use Aggregable;
     use Queryable;
 
@@ -67,6 +65,24 @@ abstract class CacheRepository implements
         }
 
         return $this->cache;
+    }
+
+    /**
+     * Get cache name
+     *
+     * @param \CodeHappy\DataLayer\Repository $repository
+     * @return string
+     */
+    public function getCacheName(Repository $repository): string
+    {
+        $database = $repository
+            ->builder()
+            ->getConnection()
+            ->getDatabaseName();
+
+        $rawSql = $repository->builder()->toRawSql();
+
+        return  md5($database . '|' . $rawSql);
     }
 
     /**
@@ -195,5 +211,17 @@ abstract class CacheRepository implements
                     return $this->repository->distinct();
                 }
             );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function restoreFromTrash(): ?bool
+    {
+        $isRestored = $this->repository->restoreFromTrash();
+        if ($isRestored === true) {
+            $this->cache()->clear();
+        }
+        return $isRestored;
     }
 }

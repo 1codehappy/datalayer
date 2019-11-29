@@ -2,20 +2,22 @@
 
 namespace CodeHappy\DataLayer\Traits\Queries;
 
-use CodeHappy\DataLayer\Contracts\Queries\JoinInterface;
 use CodeHappy\DataLayer\Facades\QueryFactory;
+use CodeHappy\DataLayer\Traits\Queries\Aliases\Joinable as Aliases;
 use Closure;
 
 trait Joinable
 {
+    use Aliases;
+
     /**
      * Declare inner join relationship
      *
      * @param string $table
      * @param \Closure|array $relations
-     * @return \CodeHappy\DataLayer\Contracts\Queries\JoinInterface
+     * @return mixed
      */
-    public function innerJoin(string $table, $relations): JoinInterface
+    public function innerJoin(string $table, $relations)
     {
         $this->builder = QueryFactory::load($this->builder(), $this)
             ->innerJoin($table, $relations);
@@ -27,9 +29,9 @@ trait Joinable
      *
      * @param string $table
      * @param \Closure|array $relations
-     * @return \CodeHappy\DataLayer\Contracts\Queries\JoinInterface
+     * @return mixed
      */
-    public function leftJoin(string $table, $relations): JoinInterface
+    public function leftJoin(string $table, $relations)
     {
         $this->builder = QueryFactory::load($this->builder(), $this)
             ->leftJoin($table, $relations);
@@ -41,24 +43,12 @@ trait Joinable
      *
      * @param string $table
      * @param \Closure|array $relations
-     * @return \CodeHappy\DataLayer\Contracts\Queries\JoinInterface
+     * @return mixed
      */
-    public function rightJoin(string $table, $relations): JoinInterface
+    public function rightJoin(string $table, $relations)
     {
         $this->builder = QueryFactoryQueryFactory::load($this->builder(), $this)
             ->rightJoin($table, $relations);
         return $this;
-    }
-
-    /**
-     * Alias to innerJoin() method
-     *
-     * @param string $table
-     * @param \Closure|array $relations
-     * @return \CodeHappy\DataLayer\Contracts\Queries\JoinInterface
-     */
-    public function join(string $table, $relations): JoinInterface
-    {
-        return $this->innerJoin($table, $relations);
     }
 }

@@ -8,6 +8,7 @@ use CodeHappy\DataLayer\Queries\Conditions\Where;
 use CodeHappy\DataLayer\Queries\Conditions\WhereIn;
 use CodeHappy\DataLayer\Queries\Conditions\WhereNotIn;
 use CodeHappy\DataLayer\Queries\Conditions\Between;
+use CodeHappy\DataLayer\Queries\Conditions\NotBetween;
 use CodeHappy\DataLayer\Queries\Conditions\IsNull;
 use CodeHappy\DataLayer\Queries\Conditions\NotNull;
 use CodeHappy\DataLayer\Queries\EagerLoading\With;
@@ -91,11 +92,22 @@ class Factory
     }
 
     /**
+     * Apply not between condition
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function notBetween(): Builder
+    {
+        return (new NotBetween($this->builder, $this->repository))
+            ->handle(...func_get_args());
+    }
+
+    /**
      * Apply null condition
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function null(): Builder
+    public function isNull(): Builder
     {
         return (new IsNull($this->builder, $this->repository))
             ->handle(...func_get_args());
@@ -106,7 +118,7 @@ class Factory
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function notNull(): Builder
+    public function isNotNull(): Builder
     {
         return (new NotNull($this->builder, $this->repository))
             ->handle(...func_get_args());

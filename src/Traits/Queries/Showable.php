@@ -2,7 +2,6 @@
 
 namespace CodeHappy\DataLayer\Traits\Queries;
 
-use CodeHappy\DataLayer\Contracts\Queries\ShowInterface;
 use CodeHappy\DataLayer\Facades\QueryFactory;
 
 trait Showable
@@ -10,9 +9,9 @@ trait Showable
     /**
      * List Columns to show
      *
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ShowInterface
+     * @return mixed
      */
-    public function select(): ShowInterface
+    public function select()
     {
         $this->builder = QueryFactory::load($this->builder(), $this)
             ->select(...func_get_args());
@@ -23,9 +22,9 @@ trait Showable
      * Define the max rows for query
      *
      * @param int $max
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ShowInterface
+     * @return mixed
      */
-    public function limit(int $max): ShowInterface
+    public function limit(int $max)
     {
         $this->builder = QueryFactory::load($this->builder(), $this)
             ->limit($max);
@@ -36,9 +35,9 @@ trait Showable
      * Define the start position for the query
      *
      * @param int $startAt
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ShowInterface
+     * @return mixed
      */
-    public function offset(int $startAt): ShowInterface
+    public function offset(int $startAt)
     {
         $this->builder = QueryFactory::load($this->builder(), $this)
             ->offset($startAt);

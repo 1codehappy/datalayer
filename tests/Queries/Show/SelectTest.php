@@ -44,11 +44,16 @@ class SelectTest extends TestCase
      */
     public function it_handles_should_be_successful($args, $params): void
     {
-        foreach ($args[0] as $arg) {
+        $raw = [];
+        if (count($args) === 1) {
+            $raw = is_array($args[0]) === true ? $args[0] : explode(',', $args[0]);
+        }
+
+        foreach ($raw as $arg) {
             DB::shouldReceive('raw')
                 ->with($arg)
                 ->once()
-                ->andReturn((string) $arg);
+                ->andReturn(trim((string) $arg));
         }
         $this->builder
             ->shouldReceive('select')
@@ -64,7 +69,7 @@ class SelectTest extends TestCase
     public function additionProvider(): array
     {
         return [
-            [
+            /*[
                 [
                     ['*'],
                 ],
@@ -119,13 +124,21 @@ class SelectTest extends TestCase
                 [
                     ['orders.id', 'customers.email', 'orders.date', 'orders.total'],
                 ],
-            ],
-            [
+            ],*/
+            /*[
                 [
                     ['orders.id, customers.email, orders.date, orders.total'],
                 ],
                 [
                     ['orders.id', 'customers.email', 'orders.date', 'orders.total'],
+                ],
+            ],*/
+            [
+                [
+                    ['CAST(order_date) AS DATE, COUNT(id) AS qty_orders'],
+                ],
+                [
+                    ['CAST(order_date) AS DATE', 'COUNT(id) AS qty_orders'],
                 ],
             ],
         ];

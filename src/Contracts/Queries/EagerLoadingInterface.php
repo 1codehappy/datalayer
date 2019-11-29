@@ -8,7 +8,7 @@ interface EagerLoadingInterface
      * Eager loading to relations
      *
      * @param array|string $relations
-     * @return $this
+     * @return mixed
      */
-    public function with($relations): self;
+    public function with($relations);
 }

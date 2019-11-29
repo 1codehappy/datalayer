@@ -2,25 +2,21 @@
 
 namespace CodeHappy\DataLayer\Traits;
 
-use CodeHappy\DataLayer\Repository;
+use CodeHappy\DataLayer\CacheRepository;
 
 trait Cacheable
 {
     /**
-     * Get cache name
+     * Get instance of Cache Repository
      *
-     * @param \CodeHappy\DataLayer\Repository $repository
-     * @return string
+     * @return \CodeHappy\DataLayer\CacheRepository|null
      */
-    public function getCacheName(Repository $repository): string
+    public function cached(): ?CacheRepository
     {
-        $database = $repository
-            ->builder()
-            ->getConnection()
-            ->getDatabaseName();
+        if (method_exists($this, 'cacheRepository') === true) {
+            return $this->cacheRepository;
+        }
 
-        $rawSql = $repository->builder()->toRawSql();
-
-        return  md5($database . '|' . $rawSql);
+        return null;
     }
 }

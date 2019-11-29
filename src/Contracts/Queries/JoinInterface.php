@@ -9,25 +9,25 @@ interface JoinInterface
      *
      * @param string $table
      * @param \Closure|array $relations
-     * @return \CodeHappy\DataLayer\Contracts\Queries\JoinInterface
+     * @return mixed
      */
-    public function innerJoin(string $table, $relations): JoinInterface;
+    public function innerJoin(string $table, $relations);
 
     /**
      * Declare left join relationship
      *
      * @param string $table
      * @param \Closure|array $relations
-     * @return \CodeHappy\DataLayer\Contracts\Queries\JoinInterface
+     * @return mixed
      */
-    public function leftJoin(string $table, $relations): JoinInterface;
+    public function leftJoin(string $table, $relations);
 
     /**
      * Declare right join relationship
      *
      * @param string $table
      * @param \Closure|array $relations
-     * @return \CodeHappy\DataLayer\Contracts\Queries\JoinInterface
+     * @return mixed
      */
-    public function rightJoin(string $table, $relations): JoinInterface;
+    public function rightJoin(string $table, $relations);
 }

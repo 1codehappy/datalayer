@@ -5,11 +5,15 @@ namespace CodeHappy\DataLayer\Traits\Queries;
 use Illuminate\Support\Arr;
 use CodeHappy\DataLayer\Contracts\Queries\ConditionInterface;
 use CodeHappy\DataLayer\Facades\QueryFactory;
+use CodeHappy\DataLayer\Traits\Queries\Aliases\Conditionable as Aliases;
+use BadMethodCallException;
 use Closure;
 use ReflectionClass;
 
 trait Conditionable
 {
+    use Aliases;
+
     /**
      * @var \Illuminate\Database\Eloquent\Builder|null
      */
@@ -21,21 +25,40 @@ trait Conditionable
     protected $methods;
 
     /**
+     * Where
+     *
+     * @param \Closure|string $param
+     * @param mixed  $value
+     * @param string $operator
+     * @return mixed
+     */
+    public function where($param)
+    {
+        if ($param instanceof Closure) {
+            return $this->groupConditions($param);
+        }
+
+        $this->builder = QueryFactory::load($this->builder(), $this)
+            ->where($param);
+        return $this;
+    }
+
+    /**
      * Is equal to
      *
      * @param string $column
      * @param mixed  $value
      * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
+     * @return mixed
      */
-    public function equals(string $column, $value, string $operator = 'AND'): ConditionInterface
+    public function equals(string $column, $value, string $operator = 'AND')
     {
         if (is_array($value) === true) {
             $this->builder = QueryFactory::load($this->builder(), $this)
                 ->whereIn($column, $value, $operator);
             return $this;
         }
-        return $this->where($column, $value, '=', $operator);
+        return $this->applyCondition($column, $value, '=', $operator);
     }
 
     /**
@@ -44,16 +67,16 @@ trait Conditionable
      * @param string $column
      * @param mixed  $value
      * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
+     * @return mixed
      */
-    public function not(string $column, $value, string $operator = 'AND'): ConditionInterface
+    public function not(string $column, $value, string $operator = 'AND')
     {
         if (is_array($value) === true) {
             $this->builder = QueryFactory::load($this->builder(), $this)
                 ->whereNotIn($column, $value, $operator);
             return $this;
         }
-        return $this->where($column, $value, '<>', $operator);
+        return $this->applyCondition($column, $value, '<>', $operator);
     }
 
     /**
@@ -62,11 +85,11 @@ trait Conditionable
      * @param string $column
      * @param mixed  $value
      * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
+     * @return mixed
      */
-    public function like(string $column, $value, string $operator = 'AND'): ConditionInterface
+    public function like(string $column, $value, string $operator = 'AND')
     {
-        return $this->where($column, $value, 'LIKE', $operator);
+        return $this->applyCondition($column, $value, 'LIKE', $operator);
     }
 
     /**
@@ -75,11 +98,11 @@ trait Conditionable
      * @param string $column
      * @param mixed  $value
      * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
+     * @return mixed
      */
-    public function notLike(string $column, $value, string $operator = 'AND'): ConditionInterface
+    public function notLike(string $column, $value, string $operator = 'AND')
     {
-        return $this->where($column, $value, 'NOT LIKE', $operator);
+        return $this->applyCondition($column, $value, 'NOT LIKE', $operator);
     }
 
     /**
@@ -88,11 +111,11 @@ trait Conditionable
      * @param string $column
      * @param mixed  $value
      * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
+     * @return mixed
      */
-    public function isGreaterThan(string $column, $value, string $operator = 'AND'): ConditionInterface
+    public function isGreaterThan(string $column, $value, string $operator = 'AND')
     {
-        return $this->where($column, $value, '>', $operator);
+        return $this->applyCondition($column, $value, '>', $operator);
     }
 
     /**
@@ -101,11 +124,11 @@ trait Conditionable
      * @param string $column
      * @param mixed  $value
      * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
+     * @return mixed
      */
-    public function isGreaterThanEqualTo(string $column, $value, string $operator = 'AND'): ConditionInterface
+    public function isGreaterThanEqualTo(string $column, $value, string $operator = 'AND')
     {
-        return $this->where($column, $value, '>=', $operator);
+        return $this->applyCondition($column, $value, '>=', $operator);
     }
 
     /**
@@ -114,11 +137,11 @@ trait Conditionable
      * @param string $column
      * @param mixed  $value
      * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
+     * @return mixed
      */
-    public function isLessThan(string $column, $value, string $operator = 'AND'): ConditionInterface
+    public function isLessThan(string $column, $value, string $operator = 'AND')
     {
-        return $this->where($column, $value, '<', $operator);
+        return $this->applyCondition($column, $value, '<', $operator);
     }
 
     /**
@@ -127,19 +150,19 @@ trait Conditionable
      * @param string $column
      * @param mixed  $value
      * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
+     * @return mixed
      */
-    public function isLessThanEqualTo(string $column, $value, string $operator = 'AND'): ConditionInterface
+    public function isLessThanEqualTo(string $column, $value, string $operator = 'AND')
     {
-        return $this->where($column, $value, '<=', $operator);
+        return $this->applyCondition($column, $value, '<=', $operator);
     }
 
     /**
      * Is between value1 and value2
      *
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
+     * @return mixed
      */
-    public function isBetween(): ConditionInterface
+    public function isBetween()
     {
         $builder = $this->clausules ?? $this->builder();
         $builder = QueryFactory::load($builder, $this)
@@ -150,17 +173,32 @@ trait Conditionable
     }
 
     /**
+     * Is Not between value1 and value2
+     *
+     * @return mixed
+     */
+    public function isNotBetween()
+    {
+        $builder = $this->clausules ?? $this->builder();
+        $builder = QueryFactory::load($builder, $this)
+            ->notBetween(...func_get_args());
+        $this->clausules ? $this->clausules = $builder : $this->builder = $builder;
+
+        return $this;
+    }
+
+    /**
      * Is null
      *
      * @param string $column
      * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
+     * @return mixed
      */
-    public function isNull(string $column, string $operator = 'AND'): ConditionInterface
+    public function isNull(string $column, string $operator = 'AND')
     {
         $builder = $this->clausules ?? $this->builder();
         $builder = QueryFactory::load($builder, $this)
-            ->null($column, $operator);
+            ->isNull($column, $operator);
         $this->clausules ? $this->clausules = $builder : $this->builder = $builder;
 
         return $this;
@@ -171,13 +209,13 @@ trait Conditionable
      *
      * @param string $column
      * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
+     * @return mixed
      */
-    public function isNotNull(string $column, string $operator = 'AND'): ConditionInterface
+    public function isNotNull(string $column, string $operator = 'AND')
     {
         $builder = $this->clausules ?? $this->builder();
         $builder = QueryFactory::load($builder, $this)
-            ->notNull($column, $operator);
+            ->isNotNull($column, $operator);
         $this->clausules ? $this->clausules = $builder : $this->builder = $builder;
 
         return $this;
@@ -188,9 +226,9 @@ trait Conditionable
      *
      * @param \Closure $clausules
      * @param \string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
+     * @return mixed
      */
-    public function agroup(Closure $clausules, string $operator = 'AND'): ConditionInterface
+    public function groupConditions(Closure $clausules, string $operator = 'AND')
     {
         $this->clausules = $this->model->newModelQuery();
         call_user_func($closure, $this);
@@ -200,108 +238,20 @@ trait Conditionable
     }
 
     /**
-     * Alias to equals()
-     *
-     * @param string $column
-     * @param mixed  $value
-     * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
-     */
-    public function isEqualTo(string $column, $value, string $operator = 'AND'): ConditionInterface
-    {
-        return $this->equals($column, $value, $operator);
-    }
-
-    /**
-     * Alias to not()
-     *
-     * @param string $column
-     * @param mixed  $value
-     * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
-     */
-    public function isNotEqualTo(string $column, $value, string $operator = 'AND'): ConditionInterface
-    {
-        return $this->not($column, $value, $operator);
-    }
-
-    /**
-     * Alias to isGreaterThan()
-     *
-     * @param string $column
-     * @param mixed  $value
-     * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
-     */
-    public function after(string $column, $value, string $operator = 'AND'): ConditionInterface
-    {
-        return $this->isGreaterThan($column, $value, $operator);
-    }
-
-    /**
-     * Alias to isGreaterThanEqualTo()
-     *
-     * @param string $column
-     * @param mixed  $value
-     * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
-     */
-    public function since(string $column, $value, string $operator = 'AND'): ConditionInterface
-    {
-        return $this->isGreaterThanEqualTo($column, $value, $operator);
-    }
-
-    /**
-     * Alias to isLessThan()
-     *
-     * @param string $column
-     * @param mixed  $value
-     * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
-     */
-    public function before(string $column, $value, string $operator = 'AND'): ConditionInterface
-    {
-        return $this->isLessThan($column, $value, $operator);
-    }
-
-    /**
-     * Alias to isLessThanEqualTo()
-     *
-     * @param string $column
-     * @param mixed  $value
-     * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
-     */
-    public function until(string $column, $value, string $operator = 'AND'): ConditionInterface
-    {
-        return $this->isLessThanEqualTo($column, $value, $operator);
-    }
-
-    /**
-     * Alias to isBetween()
-     *
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
-     */
-    public function among(): ConditionInterface
-    {
-        return $this->isBetween(...func_get_args());
-    }
-
-    /**
      * Apply where clausule
      *
      * @param string $column
      * @param mixed  $value
      * @param string $operator
      * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ConditionInterface
+     * @return mixed
      */
-    public function where(
+    public function applyCondition(
         string $column,
         $value,
         string $comparator = '=',
         string $operator = 'AND'
-    ): ConditionInterface {
+    ) {
         $builder = $this->clausules ?? $this->builder();
         $builder = QueryFactory::load($builder, $this)
             ->where($column, $comparator, $value, $operator);
@@ -344,6 +294,12 @@ trait Conditionable
             $name = lcfirst(substr($name, 2));
             $arguments[] = 'OR';
         }
+
+        if (method_exists($this, $name) === false) {
+            $class = get_called_class();
+            throw new BadMethodCallException("Call to undefined method {$class}::{$name}()");
+        }
+
         return $this->{$name}(...$arguments);
     }
 }

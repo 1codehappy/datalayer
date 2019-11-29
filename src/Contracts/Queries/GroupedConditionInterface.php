@@ -11,7 +11,7 @@ interface GroupedConditionInterface
      *
      * @param \Closure|string $sql
      * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\GroupedConditionInterface
+     * @return mixed
      */
-    public function where($sql, string $operator = 'AND'): GroupedConditionInterface;
+    public function where($sql, string $operator = 'AND');
 }

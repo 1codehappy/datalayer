@@ -7,9 +7,9 @@ interface SummaryInterface
     /**
      * Group by columns
      *
-     * @return \CodeHappy\DataLayer\Contracts\Queries\SummaryInterface
+     * @return mixed
      */
-    public function groupBy(): SummaryInterface;
+    public function groupBy();
 
     /**
      * Having
@@ -18,12 +18,12 @@ interface SummaryInterface
      * @param string|null $comparator
      * @param string|null $value
      * @param string $operator
-     * @return \CodeHappy\DataLayer\Contracts\Queries\SummaryInterface
+     * @return mixed
      */
     public function having(
         string $column,
         ?string $comparator = null,
         ?string $value = null,
         string $operator = 'AND'
-    ): SummaryInterface;
+    );
 }

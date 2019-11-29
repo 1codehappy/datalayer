@@ -2,7 +2,6 @@
 
 namespace CodeHappy\DataLayer\Traits\Queries;
 
-use CodeHappy\DataLayer\Contracts\Queries\EagerLoadingInterface;
 use CodeHappy\DataLayer\Facades\QueryFactory;
 
 trait EagerLoading
@@ -11,9 +10,9 @@ trait EagerLoading
      * Eager loading to relations
      *
      * @param array|string $relations
-     * @return \CodeHappy\DataLayer\Contracts\Queries\EagerLoadingInterface
+     * @return mixed
      */
-    public function with($relations): EagerLoadingInterface
+    public function with($relations)
     {
         if (is_string($relations) === true) {
             $relations = explode(',', $relations);

@@ -7,23 +7,23 @@ interface ShowInterface
     /**
      * List Columns to show
      *
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ShowInterface
+     * @return mixed
      */
-    public function select(): ShowInterface;
+    public function select();
 
     /**
      * Define the max rows for query
      *
      * @param int $max
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ShowInterface
+     * @return mixed
      */
-    public function limit(int $max): ShowInterface;
+    public function limit(int $max);
 
     /**
      * Define the start position for the query
      *
      * @param int $startAt
-     * @return \CodeHappy\DataLayer\Contracts\Queries\ShowInterface
+     * @return mixed
      */
-    public function offset(int $startAt): ShowInterface;
+    public function offset(int $startAt);
 }

@@ -19,12 +19,12 @@ class Select extends AbstractQuery
         if ($count === 0) {
             throw new InvalidArgumentException();
         }
-        if ($count === 1 && is_array($args[0]) === true) {
-            $args = $args[0];
+        if ($count === 1) {
+            $args = is_array($args[0]) === true ? $args[0] : explode(',', $args[0]);
         }
         $columns = [];
         foreach ($args as $column) {
-            $columns[] = DB::raw($column);
+           $columns[] = trim(DB::raw($column));
         }
         return $this->builder->select($columns);
     }

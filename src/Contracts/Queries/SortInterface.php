@@ -7,7 +7,7 @@ interface SortInterface
     /**
      * Sort query
      *
-     * @return \CodeHappy\DataLayer\Contracts\Queries\SortInterface
+     * @return mixed
      */
-    public function orderBy(): SortInterface;
+    public function orderBy();
 }

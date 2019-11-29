@@ -2,7 +2,6 @@
 
 namespace CodeHappy\DataLayer\Traits\Queries;
 
-use CodeHappy\DataLayer\Contracts\Queries\SortInterface;
 use CodeHappy\DataLayer\Facades\QueryFactory;
 
 trait Sortable
@@ -10,9 +9,9 @@ trait Sortable
     /**
      * Sort query
      *
-     * @return \CodeHappy\DataLayer\Contracts\Queries\SortInterface
+     * @return mixed
      */
-    public function orderBy(): SortInterface
+    public function orderBy()
     {
         $this->builder = QueryFactory::load($this->builder(), $this)
             ->orderBy(...func_get_args());

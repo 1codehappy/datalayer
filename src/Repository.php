@@ -10,6 +10,7 @@ use Illuminate\Support\Collection;
 use CodeHappy\DataLayer\Contracts\AggregationInterface;
 use CodeHappy\DataLayer\Contracts\RepositoryInterface;
 use CodeHappy\DataLayer\Traits\Aggregable;
+use CodeHappy\DataLayer\Traits\Aliases;
 use CodeHappy\DataLayer\Traits\Queryable;
 
 abstract class Repository implements
@@ -17,6 +18,7 @@ abstract class Repository implements
     AggregationInterface
 {
     use Aggregable;
+    use Aliases;
     use Queryable;
 
     /**
@@ -178,5 +180,13 @@ abstract class Repository implements
     public function distinct(): Collection
     {
         return $this->builder()->distinct();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function restoreFromTrash(): ?bool
+    {
+        return $this->builder()->restore();
     }
 }
