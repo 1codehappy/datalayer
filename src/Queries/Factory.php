@@ -18,6 +18,8 @@ use CodeHappy\DataLayer\Queries\Joins\RightJoin;
 use CodeHappy\DataLayer\Queries\Show\Offset;
 use CodeHappy\DataLayer\Queries\Show\Limit;
 use CodeHappy\DataLayer\Queries\Show\Select;
+use CodeHappy\DataLayer\Queries\SoftDeletes\OnlyTrashed;
+use CodeHappy\DataLayer\Queries\SoftDeletes\WithTrashed;
 use CodeHappy\DataLayer\Queries\Sorting\OrderBy;
 use CodeHappy\DataLayer\Queries\Summarized\GroupBy;
 use CodeHappy\DataLayer\Queries\Summarized\Having;

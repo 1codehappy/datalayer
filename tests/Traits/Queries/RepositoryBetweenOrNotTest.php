@@ -12,7 +12,7 @@ use CodeHappy\DataLayer\Repository;
 use CodeHappy\DataLayer\Tests\TestCase;
 use Mockery;
 
-class RepositoryBetweenTest extends TestCase
+class RepositoryBetweenOrNotTest extends TestCase
 {
     /**
      * @var \Illuminate\Container\Container
@@ -105,19 +105,60 @@ class RepositoryBetweenTest extends TestCase
 
         QueryFactory::shouldReceive('load')
             ->with($this->builder, $this->repository)
-            ->once()
+            ->twice()
             ->andReturn($this->factory);
 
         $this->factory
             ->shouldReceive('between')
             ->with(...$params)
-            ->once()
+            ->twice()
             ->andReturn($this->builder);
 
         $this->assertInstanceOf(
             ConditionInterface::class,
             $this->repository
                 ->isBetween(...$params)
+        );
+
+        $this->assertInstanceOf(
+            ConditionInterface::class,
+            $this->repository
+                ->between(...$params)
+        );
+    }
+
+    /**
+     * @test
+     * @dataProvider additionProvider
+     */
+    public function it_is_not_between_should_be_successful($params): void
+    {
+        $this->model
+            ->shouldReceive('newQuery')
+            ->once()
+            ->andReturn($this->builder);
+
+        QueryFactory::shouldReceive('load')
+            ->with($this->builder, $this->repository)
+            ->twice()
+            ->andReturn($this->factory);
+
+        $this->factory
+            ->shouldReceive('notBetween')
+            ->with(...$params)
+            ->twice()
+            ->andReturn($this->builder);
+
+        $this->assertInstanceOf(
+            ConditionInterface::class,
+            $this->repository
+                ->isNotBetween(...$params)
+        );
+
+        $this->assertInstanceOf(
+            ConditionInterface::class,
+            $this->repository
+                ->notBetween(...$params)
         );
     }
 

@@ -9,17 +9,12 @@ trait EagerLoading
     /**
      * Eager loading to relations
      *
-     * @param array|string $relations
      * @return mixed
      */
-    public function with($relations)
+    public function with()
     {
-        if (is_string($relations) === true) {
-            $relations = explode(',', $relations);
-        }
-
         $this->builder = QueryFactory::load($this->builder(), $this)
-            ->with($relations);
+            ->with(...func_get_args());
 
         return $this;
     }

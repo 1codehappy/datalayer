@@ -3,6 +3,7 @@
 namespace CodeHappy\DataLayer\Tests\Queries\Show;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use CodeHappy\DataLayer\Contracts\RepositoryInterface;
 use CodeHappy\DataLayer\Queries\Show\Select as Query;
@@ -37,27 +38,25 @@ class SelectTest extends TestCase
 
         $this->query = new Query($this->builder, $this->repository);
     }
-
     /**
      * @test
      * @dataProvider additionProvider
      */
     public function it_handles_should_be_successful($args, $params): void
     {
-        $raw = [];
-        if (count($args) === 1) {
-            $raw = is_array($args[0]) === true ? $args[0] : explode(',', $args[0]);
+        $tmp = Arr::flatten($args);
+        if (count($tmp) === 1) {
+            $tmp = explode(', ', $tmp[0]);
         }
-
-        foreach ($raw as $arg) {
+        foreach ($tmp as $arg) {
             DB::shouldReceive('raw')
                 ->with($arg)
                 ->once()
-                ->andReturn(trim((string) $arg));
+                ->andReturn($arg);
         }
         $this->builder
             ->shouldReceive('select')
-            ->with(...$args)
+            ->with($tmp)
             ->once()
             ->andReturn($this->builder);
         $this->assertInstanceOf(Builder::class, $this->query->handle(...$params));
@@ -69,7 +68,7 @@ class SelectTest extends TestCase
     public function additionProvider(): array
     {
         return [
-            /*[
+            [
                 [
                     ['*'],
                 ],
@@ -124,15 +123,15 @@ class SelectTest extends TestCase
                 [
                     ['orders.id', 'customers.email', 'orders.date', 'orders.total'],
                 ],
-            ],*/
-            /*[
+            ],
+            [
                 [
                     ['orders.id, customers.email, orders.date, orders.total'],
                 ],
                 [
                     ['orders.id', 'customers.email', 'orders.date', 'orders.total'],
                 ],
-            ],*/
+            ],
             [
                 [
                     ['CAST(order_date) AS DATE, COUNT(id) AS qty_orders'],

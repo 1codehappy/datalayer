@@ -10,7 +10,7 @@ use CodeHappy\DataLayer\Tests\TestCase;
 use InvalidArgumentException;
 use Mockery;
 
-class FactoryNullTest extends TestCase
+class FactoryIsNullTest extends TestCase
 {
     /**
      * @var \Illuminate\Database\Eloquent\Builder
@@ -34,7 +34,6 @@ class FactoryNullTest extends TestCase
     {
         $this->builder      = Mockery::mock(Builder::class);
         $this->repository   = Mockery::mock(RepositoryInterface::class);
-
         $this->factory = new Factory;
         $this->factory->load($this->builder, $this->repository);
     }
@@ -60,7 +59,7 @@ class FactoryNullTest extends TestCase
 
         $this->assertInstanceOf(
             Builder::class,
-            $this->factory->null(...$params)
+            $this->factory->isNull(...$params)
         );
     }
 
@@ -91,7 +90,7 @@ class FactoryNullTest extends TestCase
     public function it_raises_an_exception_without_params_should_be_successful(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->factory->null();
+        $this->factory->isNull();
     }
 
     /**
@@ -101,7 +100,7 @@ class FactoryNullTest extends TestCase
     public function it_raises_an_exception_should_be_successful($params): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->factory->null(...$params);
+        $this->factory->isNull(...$params);
     }
 
     public function additionExceptionProvider(): array

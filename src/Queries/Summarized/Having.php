@@ -16,11 +16,12 @@ class Having extends AbstractQuery
     {
         $params = func_get_args();
         $count = count($params);
-        if ($count !== 3) {
+        if ($count !== 1 && $count !== 3) {
             throw new InvalidArgumentException();
         }
         $params[0] = DB::raw($params[0]);
-
-        return $this->builder->having(...$params);
+        return $count === 1 ?
+            $this->builder->havingRaw($params[0]) :
+            $this->builder->having(...$params);
     }
 }

@@ -10,7 +10,7 @@ use CodeHappy\DataLayer\Tests\TestCase;
 use InvalidArgumentException;
 use Mockery;
 
-class FactoryBetweenTest extends TestCase
+class FactoryNotBetweenTest extends TestCase
 {
     /**
      * @var \Illuminate\Database\Eloquent\Builder
@@ -53,14 +53,14 @@ class FactoryBetweenTest extends TestCase
             ->andReturn((string) $args[0]);
 
         $this->builder
-            ->shouldReceive('whereBetween')
+            ->shouldReceive('whereNotBetween')
             ->with(...$args)
             ->once()
             ->andReturn($this->builder);
 
         $this->assertInstanceOf(
             Builder::class,
-            $this->factory->between(...$params)
+            $this->factory->notBetween(...$params)
         );
     }
 
@@ -127,7 +127,7 @@ class FactoryBetweenTest extends TestCase
     public function it_raises_an_exception_without_params_should_be_successful(): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->factory->between();
+        $this->factory->notBetween();
     }
 
     /**
@@ -137,7 +137,7 @@ class FactoryBetweenTest extends TestCase
     public function it_raises_an_exception_should_be_successful($params): void
     {
         $this->expectException(InvalidArgumentException::class);
-        $this->factory->between(...$params);
+        $this->factory->notBetween(...$params);
     }
 
     public function additionExceptionProvider(): array

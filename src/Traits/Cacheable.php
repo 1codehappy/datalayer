@@ -2,19 +2,20 @@
 
 namespace CodeHappy\DataLayer\Traits;
 
-use CodeHappy\DataLayer\CacheRepository;
+use CodeHappy\DataLayer\CachingRepository;
 
 trait Cacheable
 {
     /**
      * Get instance of Cache Repository
      *
-     * @return \CodeHappy\DataLayer\CacheRepository|null
+     * @return \CodeHappy\DataLayer\CachingRepository|null
      */
-    public function cached(): ?CacheRepository
+    public function cached(): ?CachingRepository
     {
-        if (method_exists($this, 'cacheRepository') === true) {
-            return $this->cacheRepository;
+        if (property_exists($this, 'cachingRepository') === true) {
+            $this->newQuery();
+            return app($this->cachingRepository);
         }
 
         return null;

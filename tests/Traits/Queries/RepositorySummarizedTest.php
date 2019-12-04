@@ -127,6 +127,9 @@ class RepositorySummarizedTest extends TestCase
     {
         return [
             [
+                ['order_id, product_id'],
+            ],
+            [
                 ['order_id', 'product_id'],
             ],
             [
@@ -135,7 +138,10 @@ class RepositorySummarizedTest extends TestCase
                 ],
             ],
             [
-                [ 1 ],
+                [ 1, 2 ],
+            ],
+            [
+                [ '1, 2' ],
             ],
             [
                 [
@@ -149,7 +155,7 @@ class RepositorySummarizedTest extends TestCase
      * @test
      * @dataProvider additionProviderForHaving
      */
-    public function it_applies_having_should_be_successful($params, $query): void
+    public function it_applies_having_should_be_successful($params): void
     {
         $this->model
             ->shouldReceive('newQuery')
@@ -163,7 +169,7 @@ class RepositorySummarizedTest extends TestCase
 
         $this->factory
             ->shouldReceive('having')
-            ->with(...$query)
+            ->with(...$params)
             ->once()
             ->andReturn($this->builder);
 
@@ -181,15 +187,18 @@ class RepositorySummarizedTest extends TestCase
         return [
             [
                 [ 'COUNT(id)' , '>', 1 ],
+            ],
+            [
                 [ 'COUNT(id)' , '>', 1, 'AND' ],
             ],
             [
-                [ 'active' ],
-                [ 'active' , null, null, 'AND' ],
+                [ 'SUM(price)', '<', 100],
             ],
             [
                 [ 'SUM(price)', '<', 100, 'OR' ],
-                [ 'SUM(price)', '<', 100, 'OR' ],
+            ],
+            [
+                [ 'AVERAGE(age) BETWEEN 18 AND 21' ],
             ],
         ];
     }

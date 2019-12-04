@@ -127,12 +127,18 @@ class RepositoryShowTest extends TestCase
     {
         return [
             [
+                ['id, name, email, registered_at'],
+            ],
+            [
                 ['id', 'name', 'email', 'registered_at'],
             ],
             [
                 [
                     ['id', 'name', 'email', 'registered_at'],
                 ],
+            ],
+            [
+                ['orders.id, orders.customer_id, customers.email'],
             ],
             [
                 ['orders.id', 'orders.customer_id', 'customers.email'],
@@ -143,7 +149,15 @@ class RepositoryShowTest extends TestCase
                 ],
             ],
             [
+                ['orders.id AS order_id, SUM(price) AS total'],
+            ],
+            [
                 ['orders.id AS order_id', 'SUM(price) AS total'],
+            ],
+            [
+                [
+                    ['orders.id AS order_id', 'SUM(price) AS total'],
+                ],
             ],
         ];
     }

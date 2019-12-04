@@ -97,17 +97,22 @@ class DebugableTest extends TestCase
      */
     public function it_prints_sql_should_be_sucessful(): void
     {
-        $expected = 'SELECT * FROM users';
+        $sql = 'SELECT * FROM users';
 
         $this->model
             ->shouldReceive('newQuery')
             ->once()
             ->andReturn($this->builder);
         $this->builder
-            ->shouldReceive('toRawSql')
+            ->shouldReceive('getBindings')
             ->once()
-            ->andReturn($expected);
+            ->andReturn([]);
+        $this->builder
+            ->shouldReceive('toSql')
+            ->once()
+            ->andReturn($sql);
 
+        $expected = $sql . ';';
         $actual = $this->repository->toSql();
         $this->assertSame($expected, $actual);
     }

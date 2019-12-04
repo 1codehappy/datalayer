@@ -42,7 +42,7 @@ class HavingTest extends TestCase
      * @test
      * @dataProvider additionProvider
      */
-    public function it_handles_should_be_successful($params, $query): void
+    public function it_handles_should_be_successful($method, $params, $query): void
     {
         DB::shouldReceive('raw')
             ->with($params[0])
@@ -50,7 +50,7 @@ class HavingTest extends TestCase
             ->andReturn((string) $params[0]);
 
         $this->builder
-            ->shouldReceive('having')
+            ->shouldReceive($method)
             ->with(...$params)
             ->once()
             ->andReturn($this->builder);
@@ -64,12 +64,19 @@ class HavingTest extends TestCase
     {
         return [
             [
+                'having',
                 ['COUNT(id)', '>', 1],
                 ['COUNT(id)', '>', 1],
             ],
             [
+                'having',
                 ['SUM(price)', '<=', 250.00],
                 ['SUM(price)', '<=', 250.00],
+            ],
+            [
+                'havingRaw',
+                ['AVERAGE(age) BETWEEN 18 AND 21'],
+                ['AVERAGE(age) BETWEEN 18 AND 21'],
             ],
         ];
     }
@@ -99,9 +106,6 @@ class HavingTest extends TestCase
     public function additionExceptionProvider(): array
     {
         return [
-            [
-                ['COUNT(id)'],
-            ],
             [
                 ['COUNT(id)', '>', 1, 'AND'],
             ],

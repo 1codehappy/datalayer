@@ -3,6 +3,8 @@
 namespace CodeHappy\DataLayer\Tests\Queries\EagerLoading;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 use CodeHappy\DataLayer\Contracts\RepositoryInterface;
 use CodeHappy\DataLayer\Queries\EagerLoading\With as Query;
 use CodeHappy\DataLayer\Tests\TestCase;
@@ -41,14 +43,24 @@ class WithTest extends TestCase
      * @test
      * @dataProvider additionProvider
      */
-    public function it_handles_should_be_successful($params, $query): void
+    public function it_handles_should_be_successful($args, $params): void
     {
+        $tmp = Arr::flatten($args);
+        if (count($tmp) === 1) {
+            $tmp = explode(', ', $tmp[0]);
+        }
+        foreach ($tmp as $arg) {
+            DB::shouldReceive('raw')
+                ->with($arg)
+                ->once()
+                ->andReturn($arg);
+        }
         $this->builder
             ->shouldReceive('with')
-            ->with(...$params)
+            ->with($tmp)
             ->once()
             ->andReturn($this->builder);
-        $this->assertInstanceOf(Builder::class, $this->query->handle(...$query));
+        $this->assertInstanceOf(Builder::class, $this->query->handle(...$params));
     }
 
     /**
@@ -58,15 +70,11 @@ class WithTest extends TestCase
     {
         return [
             [
-                [
-                    ['customers'],
-                ],
+                ['customers'],
                 ['customers'],
             ],
             [
-                [
-                    ['customers'],
-                ],
+                ['customers'],
                 [
                     ['customers'],
                 ],
@@ -76,6 +84,12 @@ class WithTest extends TestCase
                     ['users', 'roles'],
                 ],
                 ['users', 'roles'],
+            ],
+            [
+                [
+                    ['users', 'roles'],
+                ],
+                ['users, roles'],
             ],
             [
                 [

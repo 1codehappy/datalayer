@@ -14,16 +14,7 @@ interface SummaryInterface
     /**
      * Having
      *
-     * @param string $column
-     * @param string|null $comparator
-     * @param string|null $value
-     * @param string $operator
      * @return mixed
      */
-    public function having(
-        string $column,
-        ?string $comparator = null,
-        ?string $value = null,
-        string $operator = 'AND'
-    );
+    public function having();
 }

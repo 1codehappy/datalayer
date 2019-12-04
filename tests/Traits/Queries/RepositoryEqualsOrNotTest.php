@@ -105,17 +105,23 @@ class RepositoryEqualsOrNotTest extends TestCase
 
         QueryFactory::shouldReceive('load')
             ->with($this->builder, $this->repository)
-            ->once()
+            ->twice()
             ->andReturn($this->factory);
 
         $this->factory
             ->shouldReceive('where' . (is_array($args[1]) === true ? 'In' : ''))
             ->with(...$args)
-            ->once()
+            ->twice()
             ->andReturn($this->builder);
 
-        $actual = $this->repository->equals(...$params);
-        $this->assertInstanceOf(ConditionInterface::class, $actual);
+        $this->assertInstanceOf(
+            ConditionInterface::class,
+            $this->repository->equals(...$params)
+        );
+        $this->assertInstanceOf(
+            ConditionInterface::class,
+            $this->repository->isEqualTo(...$params)
+        );
     }
 
     /**
@@ -188,17 +194,24 @@ class RepositoryEqualsOrNotTest extends TestCase
 
         QueryFactory::shouldReceive('load')
             ->with($this->builder, $this->repository)
-            ->once()
+            ->twice()
             ->andReturn($this->factory);
 
         $this->factory
             ->shouldReceive('where' . (is_array($args[1]) === true ? 'NotIn' : ''))
             ->with(...$args)
-            ->once()
+            ->twice()
             ->andReturn($this->builder);
 
-        $actual = $this->repository->notEquals(...$params);
-        $this->assertInstanceOf(ConditionInterface::class, $actual);
+        $this->assertInstanceOf(
+            ConditionInterface::class,
+            $this->repository->not(...$params)
+        );
+
+        $this->assertInstanceOf(
+            ConditionInterface::class,
+            $this->repository->isNotEqualTo(...$params)
+        );
     }
 
     /**

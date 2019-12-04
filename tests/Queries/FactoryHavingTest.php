@@ -44,6 +44,7 @@ class FactoryHavingTest extends TestCase
      * @dataProvider additionProvider
      */
     public function it_creates_an_instance_of_having_should_be_successful(
+        $method,
         $args,
         $params
     ): void {
@@ -53,7 +54,7 @@ class FactoryHavingTest extends TestCase
             ->andReturn((string) $args[0]);
 
         $this->builder
-            ->shouldReceive('having')
+            ->shouldReceive($method)
             ->with(...$args)
             ->once()
             ->andReturn($this->builder);
@@ -71,12 +72,19 @@ class FactoryHavingTest extends TestCase
     {
         return [
             [
+                'having',
                 ['COUNT(id)', '>', 1],
                 ['COUNT(id)', '>', 1],
             ],
             [
+                'having',
                 ['SUM(price)', '<=', 250.00],
                 ['SUM(price)', '<=', 250.00],
+            ],
+            [
+                'havingRaw',
+                ['AVERAGE(age) BETWEEN 18 AND 21'],
+                ['AVERAGE(age) BETWEEN 18 AND 21'],
             ],
         ];
     }
@@ -106,9 +114,6 @@ class FactoryHavingTest extends TestCase
     public function additionExceptionProvider(): array
     {
         return [
-            [
-                ['COUNT(id)'],
-            ],
             [
                 ['COUNT(id)', '>', 1, 'AND'],
             ],

@@ -103,6 +103,10 @@ class FactoryGroupByTest extends TestCase
                 ],
             ],
             [
+                ['customer_id', '2'],
+                ['customer_id, 2'],
+            ],
+            [
                 ['orders.customer_id', 'orders.date'],
                 ['orders.customer_id', 'orders.date'],
             ],
@@ -111,6 +115,10 @@ class FactoryGroupByTest extends TestCase
                 [
                     ['orders.customer_id', 'orders.date'],
                 ],
+            ],
+            [
+                ['orders.customer_id', 'orders.date'],
+                ['orders.customer_id, orders.date'],
             ],
         ];
     }

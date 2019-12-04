@@ -106,18 +106,23 @@ class RepositoryLessOrGreaterTest extends TestCase
 
         QueryFactory::shouldReceive('load')
             ->with($this->builder, $this->repository)
-            ->once()
+            ->twice()
             ->andReturn($this->factory);
 
         $this->factory
             ->shouldReceive('where')
             ->with(...$args)
-            ->once()
+            ->twice()
             ->andReturn($this->builder);
 
         $this->assertInstanceOf(
             ConditionInterface::class,
             $this->repository->isGreaterThan(...$params)
+        );
+
+        $this->assertInstanceOf(
+            ConditionInterface::class,
+            $this->repository->gt(...$params)
         );
     }
 
@@ -179,18 +184,23 @@ class RepositoryLessOrGreaterTest extends TestCase
 
         QueryFactory::shouldReceive('load')
             ->with($this->builder, $this->repository)
-            ->once()
+            ->twice()
             ->andReturn($this->factory);
 
         $this->factory
             ->shouldReceive('where')
             ->with(...$args)
-            ->once()
+            ->twice()
             ->andReturn($this->builder);
 
         $this->assertInstanceOf(
             ConditionInterface::class,
             $this->repository->isGreaterThanEqualTo(...$params)
+        );
+
+        $this->assertInstanceOf(
+            ConditionInterface::class,
+            $this->repository->gte(...$params)
         );
     }
 
@@ -252,18 +262,23 @@ class RepositoryLessOrGreaterTest extends TestCase
 
         QueryFactory::shouldReceive('load')
             ->with($this->builder, $this->repository)
-            ->once()
+            ->twice()
             ->andReturn($this->factory);
 
         $this->factory
             ->shouldReceive('where')
             ->with(...$args)
-            ->once()
+            ->twice()
             ->andReturn($this->builder);
 
         $this->assertInstanceOf(
             ConditionInterface::class,
             $this->repository->isLessThan(...$params)
+        );
+
+        $this->assertInstanceOf(
+            ConditionInterface::class,
+            $this->repository->lt(...$params)
         );
     }
 
@@ -325,18 +340,23 @@ class RepositoryLessOrGreaterTest extends TestCase
 
         QueryFactory::shouldReceive('load')
             ->with($this->builder, $this->repository)
-            ->once()
+            ->twice()
             ->andReturn($this->factory);
 
         $this->factory
             ->shouldReceive('where')
             ->with(...$args)
-            ->once()
+            ->twice()
             ->andReturn($this->builder);
 
         $this->assertInstanceOf(
             ConditionInterface::class,
             $this->repository->isLessThanEqualTo(...$params)
+        );
+
+        $this->assertInstanceOf(
+            ConditionInterface::class,
+            $this->repository->lte(...$params)
         );
     }
 
@@ -383,71 +403,5 @@ class RepositoryLessOrGreaterTest extends TestCase
                 ['birth_date', '2001-12-04', 'OR'],
             ],
         ];
-    }
-
-    /**
-     * @test
-     */
-    public function it_test_the_aliases_should_be_successful(): void
-    {
-        $this->model
-            ->shouldReceive('newQuery')
-            ->once()
-            ->andReturn($this->builder);
-
-        QueryFactory::shouldReceive('load')
-            ->with($this->builder, $this->repository)
-            ->once()
-            ->andReturn($this->factory);
-
-        $this->factory
-            ->shouldReceive('where')
-            ->with('id', '>', 100, 'AND')
-            ->once()
-            ->andReturn($this->builder);
-
-        $this->factory
-            ->shouldReceive('where')
-            ->with('id', '<', 200, 'AND')
-            ->once()
-            ->andReturn($this->builder);
-
-        $this->assertInstanceOf(
-            ConditionInterface::class,
-            $this->repository->after('id', 100)->before('id', 200)
-        );
-    }
-
-    /**
-     * @test
-     */
-    public function it_test_the_aliases_with_equal_to_should_be_successful(): void
-    {
-        $this->model
-            ->shouldReceive('newQuery')
-            ->once()
-            ->andReturn($this->builder);
-
-        QueryFactory::shouldReceive('load')
-            ->with($this->builder, $this->repository)
-            ->once()
-            ->andReturn($this->factory);
-
-        $this->factory
-            ->shouldReceive('where')
-            ->with('id', '>=', 100, 'AND')
-            ->once()
-            ->andReturn($this->builder);
-
-        $this->factory
-            ->shouldReceive('where')
-            ->with('id', '<=', 200, 'AND')
-            ->once()
-            ->andReturn($this->builder);
-
-        $this->assertInstanceOf(
-            ConditionInterface::class,
-            $this->repository->since('id', 100)->until('id', 200)
-        );
     }
 }

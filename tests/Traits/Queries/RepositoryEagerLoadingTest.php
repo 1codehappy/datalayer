@@ -96,7 +96,7 @@ class RepositoryEagerLoadingTest extends TestCase
      * @test
      * @dataProvider additionProvider
      */
-    public function it_applies_eager_loading_should_be_successful($args, $params): void
+    public function it_applies_eager_loading_should_be_successful($params): void
     {
         $this->model
             ->shouldReceive('newQuery')
@@ -110,7 +110,7 @@ class RepositoryEagerLoadingTest extends TestCase
 
         $this->factory
             ->shouldReceive('with')
-            ->with(...$args)
+            ->with(...$params)
             ->once()
             ->andReturn($this->builder);
 
@@ -127,29 +127,20 @@ class RepositoryEagerLoadingTest extends TestCase
     {
         return [
             [
-                [
-                    ['users'],
-                ],
                 ['users'],
             ],
             [
                 [
                     ['users'],
                 ],
-                [
-                    ['users'],
-                ],
             ],
             [
-                [
-                    ['categories', 'products', 'customers'],
-                ],
+                ['categories, products, customers'],
+            ],
+            [
                 ['categories', 'products', 'customers'],
             ],
             [
-                [
-                    ['categories', 'products', 'customers'],
-                ],
                 [
                     ['categories', 'products', 'customers'],
                 ],

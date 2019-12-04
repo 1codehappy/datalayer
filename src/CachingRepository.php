@@ -11,8 +11,9 @@ use CodeHappy\DataLayer\Contracts\RepositoryInterface;
 use CodeHappy\DataLayer\Repository;
 use CodeHappy\DataLayer\Traits\Caching\Aggregable;
 use CodeHappy\DataLayer\Traits\Queryable;
+use BadMethodRequestException;
 
-abstract class CacheRepository implements
+abstract class CachingRepository implements
     RepositoryInterface,
     AggregationInterface
 {
@@ -218,9 +219,16 @@ abstract class CacheRepository implements
      */
     public function restoreFromTrash(): ?bool
     {
-        $isRestored = $this->repository->restoreFromTrash();
+        if (method_exists($this->repository, 'restoreFromTrash') === false) {
+            $class = get_class($this->repository);
+            throw new BadMethodCallException("Call to undefined method {$class}::restoreFromTrash()");
+        }
+
+        $isRestored = $this->repository
+            ->restoreFromTrash();
         if ($isRestored === true) {
-            $this->cache()->clear();
+            $this->cache()
+                ->clear();
         }
         return $isRestored;
     }

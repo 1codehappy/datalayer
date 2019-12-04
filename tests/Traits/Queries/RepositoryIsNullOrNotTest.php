@@ -105,18 +105,23 @@ class RepositoryIsNullOrNotTest extends TestCase
 
         QueryFactory::shouldReceive('load')
             ->with($this->builder, $this->repository)
-            ->once()
+            ->twice()
             ->andReturn($this->factory);
 
         $this->factory
-            ->shouldReceive('null')
+            ->shouldReceive('isNull')
             ->with(...$args)
-            ->once()
+            ->twice()
             ->andReturn($this->builder);
 
         $this->assertInstanceOf(
             ConditionInterface::class,
             $this->repository->isNull(...$params)
+        );
+
+        $this->assertInstanceOf(
+            ConditionInterface::class,
+            $this->repository->null(...$params)
         );
     }
 
@@ -133,18 +138,23 @@ class RepositoryIsNullOrNotTest extends TestCase
 
         QueryFactory::shouldReceive('load')
             ->with($this->builder, $this->repository)
-            ->once()
+            ->twice()
             ->andReturn($this->factory);
 
         $this->factory
-            ->shouldReceive('notNull')
+            ->shouldReceive('isNotNull')
             ->with(...$args)
-            ->once()
+            ->twice()
             ->andReturn($this->builder);
 
         $this->assertInstanceOf(
             ConditionInterface::class,
             $this->repository->isNotNull(...$params)
+        );
+
+        $this->assertInstanceOf(
+            ConditionInterface::class,
+            $this->repository->notNull(...$params)
         );
     }
 

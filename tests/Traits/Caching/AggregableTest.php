@@ -6,7 +6,7 @@ use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Cache\Repository as Cache;
 use Illuminate\Support\Collection;
-use CodeHappy\DataLayer\CacheRepository;
+use CodeHappy\DataLayer\CachingRepository;
 use CodeHappy\DataLayer\Repository;
 use CodeHappy\DataLayer\Tests\TestCase;
 use Mockery;
@@ -48,7 +48,7 @@ class AggregableTest extends TestCase
         $this->cache        = Mockery::mock(Cache::class);
         $this->builder      = Mockery::mock(Builder::class);
 
-        $this->cacheRepository = new class($this->repository, $this->cache) extends CacheRepository
+        $this->cachingRepository = new class($this->repository, $this->cache) extends CachingRepository
         {
             /**
              * @return $this
@@ -71,9 +71,9 @@ class AggregableTest extends TestCase
     /**
      * @test
      */
-    public function it_creates_an_instance_of_cache_repository(): void
+    public function it_creates_an_instance_of_caching_repository(): void
     {
-        $this->assertInstanceOf(CacheRepository::class, $this->cacheRepository->instance());
+        $this->assertInstanceOf(CachingRepository::class, $this->cachingRepository->instance());
     }
 
     /**
@@ -81,7 +81,7 @@ class AggregableTest extends TestCase
      */
     public function it_gets_the_time_to_live_should_be_successful(): void
     {
-        $this->assertSame(1, $this->cacheRepository->timeToLive());
+        $this->assertSame(1, $this->cachingRepository->timeToLive());
     }
 
     /**
@@ -114,7 +114,7 @@ class AggregableTest extends TestCase
             ->shouldReceive('remember')
             ->once()
             ->andReturn($expected);
-        $actual = $this->cacheRepository->count();
+        $actual = $this->cachingRepository->count();
 
         $this->assertSame($expected, $actual);
     }
@@ -149,7 +149,7 @@ class AggregableTest extends TestCase
             ->shouldReceive('remember')
             ->once()
             ->andReturn($expected);
-        $actual = $this->cacheRepository->sum('price');
+        $actual = $this->cachingRepository->sum('price');
 
         $this->assertSame($expected, $actual);
     }
@@ -184,7 +184,7 @@ class AggregableTest extends TestCase
             ->shouldReceive('remember')
             ->once()
             ->andReturn($expected);
-        $actual = $this->cacheRepository->max('pageviews');
+        $actual = $this->cachingRepository->max('pageviews');
 
         $this->assertSame($expected, $actual);
     }
@@ -219,7 +219,7 @@ class AggregableTest extends TestCase
             ->shouldReceive('remember')
             ->once()
             ->andReturn($expected);
-        $actual = $this->cacheRepository->min('birth_date');
+        $actual = $this->cachingRepository->min('birth_date');
 
         $this->assertSame($expected, $actual);
     }
@@ -255,7 +255,7 @@ class AggregableTest extends TestCase
             ->once()
             ->andReturn($expected);
 
-        $actual = $this->cacheRepository->avg('age');
+        $actual = $this->cachingRepository->avg('age');
 
         $this->assertSame($expected, $actual);
     }

@@ -5,12 +5,12 @@ namespace CodeHappy\DataLayer\Tests\Queries\Conditions;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use CodeHappy\DataLayer\Contracts\RepositoryInterface;
-use CodeHappy\DataLayer\Queries\Conditions\Between as Query;
+use CodeHappy\DataLayer\Queries\Conditions\NotBetween as Query;
 use CodeHappy\DataLayer\Tests\TestCase;
 use InvalidArgumentException;
 use Mockery;
 
-class BetweenTest extends TestCase
+class NotBetweenTest extends TestCase
 {
     /**
      * @var \Illuminate\Database\Eloquent\Builder
@@ -50,7 +50,7 @@ class BetweenTest extends TestCase
             ->andReturn((string) $params[0]);
 
         $this->builder
-            ->shouldReceive('whereBetween')
+            ->shouldReceive('whereNotBetween')
             ->with(...$params)
             ->once()
             ->andReturn($this->builder);

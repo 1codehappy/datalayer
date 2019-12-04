@@ -8,12 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Cache\Repository as Cache;
 use Illuminate\Support\Collection;
-use CodeHappy\DataLayer\CacheRepository;
+use CodeHappy\DataLayer\CachingRepository;
 use CodeHappy\DataLayer\Repository;
 use CodeHappy\DataLayer\Tests\TestCase;
 use Mockery;
 
-class CacheRepositoryTest extends TestCase
+class CachingRepositoryTest extends TestCase
 {
     /**
      * @var \Illuminate\Database\Connection
@@ -51,7 +51,7 @@ class CacheRepositoryTest extends TestCase
         $this->model        = Mockery::mock(Model::class);
         $this->builder      = Mockery::mock(Builder::class);
 
-        $this->cacheRepository = new class($this->repository, $this->cache) extends CacheRepository
+        $this->cachingRepository = new class($this->repository, $this->cache) extends CachingRepository
         {
             /**
              * @return $this
@@ -70,7 +70,7 @@ class CacheRepositoryTest extends TestCase
             }
         };
 
-        $this->cacheRepositoryWithTags = new class($this->repository, $this->cache) extends CacheRepository
+        $this->cachingRepositoryWithTags = new class($this->repository, $this->cache) extends CachingRepository
         {
             /**
              * @var string|array
@@ -100,7 +100,7 @@ class CacheRepositoryTest extends TestCase
      */
     public function it_creates_an_instance_of_cache_repository(): void
     {
-        $this->assertInstanceOf(CacheRepository::class, $this->cacheRepository->instance());
+        $this->assertInstanceOf(CachingRepository::class, $this->cachingRepository->instance());
     }
 
     /**
@@ -108,7 +108,7 @@ class CacheRepositoryTest extends TestCase
      */
     public function it_gets_the_time_to_live_should_be_successful(): void
     {
-        $this->assertSame(1, $this->cacheRepository->timeToLive());
+        $this->assertSame(1, $this->cachingRepository->timeToLive());
     }
 
     /**
@@ -116,7 +116,7 @@ class CacheRepositoryTest extends TestCase
      */
     public function it_gets_the_cache_instance_without_tags(): void
     {
-        $this->assertInstanceOf(Cache::class, $this->cacheRepository->cache());
+        $this->assertInstanceOf(Cache::class, $this->cachingRepository->cache());
     }
 
     /**
@@ -130,7 +130,7 @@ class CacheRepositoryTest extends TestCase
             ->once()
             ->andReturn($this->cache);
 
-        $this->assertInstanceOf(Cache::class, $this->cacheRepositoryWithTags->cache());
+        $this->assertInstanceOf(Cache::class, $this->cachingRepositoryWithTags->cache());
     }
 
     /**
@@ -163,7 +163,7 @@ class CacheRepositoryTest extends TestCase
             ->once()
             ->andReturn($this->model);
 
-        $this->assertInstanceOf(Model::class, $this->cacheRepository->fetchById(1234));
+        $this->assertInstanceOf(Model::class, $this->cachingRepository->fetchById(1234));
     }
 
     /**
@@ -196,7 +196,7 @@ class CacheRepositoryTest extends TestCase
             ->once()
             ->andReturn(Mockery::mock(Collection::class));
 
-        $this->assertInstanceOf(Collection::class, $this->cacheRepository->fetchAll());
+        $this->assertInstanceOf(Collection::class, $this->cachingRepository->fetchAll());
     }
 
     /**
@@ -229,7 +229,7 @@ class CacheRepositoryTest extends TestCase
             ->once()
             ->andReturn(Mockery::mock(Collection::class));
 
-        $this->assertInstanceOf(Collection::class, $this->cacheRepository->fetch());
+        $this->assertInstanceOf(Collection::class, $this->cachingRepository->fetch());
     }
 
     /**
@@ -262,7 +262,7 @@ class CacheRepositoryTest extends TestCase
             ->once()
             ->andReturn(Mockery::mock(Model::class));
 
-        $this->assertInstanceOf(Model::class, $this->cacheRepository->fetchFirst());
+        $this->assertInstanceOf(Model::class, $this->cachingRepository->fetchFirst());
     }
 
     /**
@@ -297,7 +297,7 @@ class CacheRepositoryTest extends TestCase
 
         $this->assertInstanceOf(
             LengthAwarePaginator::class,
-            $this->cacheRepository->paginate()
+            $this->cachingRepository->paginate()
         );
     }
 
@@ -322,7 +322,7 @@ class CacheRepositoryTest extends TestCase
             ->once()
             ->andReturn(true);
 
-        $this->assertInstanceOf(Model::class, $this->cacheRepository->create($data));
+        $this->assertInstanceOf(Model::class, $this->cachingRepository->create($data));
     }
 
     /**
@@ -346,7 +346,7 @@ class CacheRepositoryTest extends TestCase
             ->once()
             ->andReturn(true);
 
-        $this->assertInstanceOf(Model::class, $this->cacheRepository->update($data, 1234));
+        $this->assertInstanceOf(Model::class, $this->cachingRepository->update($data, 1234));
     }
 
     /**
@@ -365,7 +365,7 @@ class CacheRepositoryTest extends TestCase
             ->once()
             ->andReturn(true);
 
-        $this->assertSame(1, $this->cacheRepository->delete(1234));
+        $this->assertSame(1, $this->cachingRepository->delete(1234));
     }
 
     /**
@@ -399,7 +399,7 @@ class CacheRepositoryTest extends TestCase
             ->once()
             ->andReturn($expected);
 
-        $actual = $this->cacheRepository->count();
+        $actual = $this->cachingRepository->count();
 
         $this->assertSame($expected, $actual);
     }
@@ -435,7 +435,7 @@ class CacheRepositoryTest extends TestCase
             ->once()
             ->andReturn($expected);
 
-        $actual = $this->cacheRepository->sum('price');
+        $actual = $this->cachingRepository->sum('price');
 
         $this->assertSame($expected, $actual);
     }
@@ -471,7 +471,7 @@ class CacheRepositoryTest extends TestCase
             ->once()
             ->andReturn($expected);
 
-        $actual = $this->cacheRepository->max('pageviews');
+        $actual = $this->cachingRepository->max('pageviews');
 
         $this->assertSame($expected, $actual);
     }
@@ -508,7 +508,7 @@ class CacheRepositoryTest extends TestCase
             ->once()
             ->andReturn($expected);
 
-        $actual = $this->cacheRepository->min('birth_date');
+        $actual = $this->cachingRepository->min('birth_date');
 
         $this->assertSame($expected, $actual);
     }
@@ -544,7 +544,7 @@ class CacheRepositoryTest extends TestCase
             ->once()
             ->andReturn($expected);
 
-        $actual = $this->cacheRepository->avg('age');
+        $actual = $this->cachingRepository->avg('age');
 
         $this->assertSame($expected, $actual);
     }

@@ -127,15 +127,30 @@ class RepositorySortingTest extends TestCase
     {
         return [
             [
+                ['id, name, email, registered_at'],
+            ],
+            [
                 ['id', 'name', 'email', 'registered_at'],
+            ],
+            [
+                ['id DESC'],
             ],
             [
                 ['id', 'DESC'],
             ],
             [
+                ['id, name DESC, created_at'],
+            ],
+            [
                 [
                     ['id', 'name' => 'DESC', 'created_at'],
                 ],
+            ],
+            [
+                ['id ASC, name DESC'],
+            ],
+            [
+                ['id ASC', 'name DESC'],
             ],
             [
                 [

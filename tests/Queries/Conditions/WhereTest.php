@@ -42,7 +42,7 @@ class WhereTest extends TestCase
      * @test
      * @dataProvider additionProvider
      */
-    public function it_handles_should_be_successful($params, $query): void
+    public function it_handles_should_be_successful($method, $params, $query): void
     {
         DB::shouldReceive('raw')
             ->with($params[0])
@@ -50,7 +50,7 @@ class WhereTest extends TestCase
             ->andReturn((string) $params[0]);
 
         $this->builder
-            ->shouldReceive('where')
+            ->shouldReceive($method)
             ->with(...$params)
             ->once()
             ->andReturn($this->builder);
@@ -64,28 +64,84 @@ class WhereTest extends TestCase
     {
         return [
             [
+                'where',
                 ['id', '=', 1, 'AND'],
                 ['id', '=', 1],
             ],
             [
+                'where',
                 ['id', '=', 1, 'AND'],
                 ['id', '=', 1, 'AND'],
             ],
             [
+                'where',
                 ['id', '=', 1, 'OR'],
                 ['id', '=', 1, 'OR'],
             ],
             [
+                'where',
+                ['id', '<>', 1, 'AND'],
+                ['id', '<>', 1],
+            ],
+            [
+                'where',
+                ['id', '<>', 1, 'AND'],
+                ['id', '<>', 1, 'AND'],
+            ],
+            [
+                'where',
+                ['id', '<>', 1, 'OR'],
+                ['id', '<>', 1, 'OR'],
+            ],
+            [
+                'where',
                 ['name', 'LIKE', 'Joe%', 'AND'],
                 ['name', 'LIKE', 'Joe%'],
             ],
             [
+                'where',
                 ['name', 'LIKE', '%Doe', 'AND'],
                 ['name', 'LIKE', '%Doe', 'AND'],
             ],
             [
+                'where',
                 ['name', 'LIKE', '%oe Do%', 'OR'],
                 ['name', 'LIKE', '%oe Do%', 'OR'],
+            ],
+            [
+                'where',
+                ['name', 'NOT LIKE', 'Mary%', 'AND'],
+                ['name', 'NOT LIKE', 'Mary%'],
+            ],
+            [
+                'where',
+                ['name', 'NOT LIKE', '%Jane', 'AND'],
+                ['name', 'NOT LIKE', '%Jane', 'AND'],
+            ],
+            [
+                'where',
+                ['name', 'NOT LIKE', '%ary Jan%', 'OR'],
+                ['name', 'NOT LIKE', '%ary Jan%', 'OR'],
+            ],
+            [
+                'whereRaw',
+                ["name LIKE '%oe Do%'"],
+                ["name LIKE '%oe Do%'"],
+            ],
+            [
+                'whereRaw',
+                ['id <> 200 AND age > 20'],
+                ['id <> 200 AND age > 20'],
+            ],
+            [
+                'whereRaw',
+                ["activated_at IS NOT NULL AND CAST(registered_at AS DATE) = '2019-11-29'"],
+                ["activated_at IS NOT NULL AND CAST(registered_at AS DATE) = '2019-11-29'"],
+            ],
+            [
+                'whereRaw',
+                ['price BETWEEN 100 AND 200 OR category_id IN (1, 2, 3)'],
+                ['price BETWEEN 100 AND 200 OR category_id IN (1, 2, 3)'],
             ],
         ];
     }
@@ -116,7 +172,6 @@ class WhereTest extends TestCase
     {
         return [
             [
-                ['test1'],
                 ['test1', '=', 'test2', 'test3'],
                 ['test1', '=', 'test2', '!=', 'test3'],
             ],

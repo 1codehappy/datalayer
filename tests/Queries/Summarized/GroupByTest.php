@@ -48,7 +48,7 @@ class GroupByTest extends TestCase
             DB::shouldReceive('raw')
                 ->with($arg)
                 ->once()
-                ->andReturn((string) $arg);
+                ->andReturn($arg);
         }
         $this->builder
             ->shouldReceive('groupBy')
@@ -95,6 +95,10 @@ class GroupByTest extends TestCase
                 ],
             ],
             [
+                ['customer_id', '2'],
+                ['customer_id, 2'],
+            ],
+            [
                 ['orders.customer_id', 'orders.date'],
                 ['orders.customer_id', 'orders.date'],
             ],
@@ -103,6 +107,10 @@ class GroupByTest extends TestCase
                 [
                     ['orders.customer_id', 'orders.date'],
                 ],
+            ],
+            [
+                ['orders.customer_id', 'orders.date'],
+                ['orders.customer_id, orders.date'],
             ],
         ];
     }

@@ -18,25 +18,13 @@ class NotBetween extends AbstractCondition
         $lastParam  = $this->lastParam($params);
         $count      = count($params);
         if (
-            (
-                $count !== 2 &&
-                $count !== 3
-            ) ||
-            is_array($params[0]) === true
-        ) {
-            throw new InvalidArgumentException();
-        }
-        if (
             $count === 2 &&
             is_array($params[1]) === true &&
             count($params[1]) === 2 &&
             is_array($params[1][0]) === false &&
             is_array($params[1][1]) === false
         ) {
-            return $this->builder->whereNotBetween(DB::raw($params[0]), [
-                $params[1],
-                $lastParam,
-            ]);
+            return $this->builder->whereNotBetween(DB::raw($params[0]), $params[1], $lastParam);
         }
         if (
             $count === 3 &&

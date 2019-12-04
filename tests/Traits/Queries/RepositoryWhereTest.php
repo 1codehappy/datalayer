@@ -128,40 +128,70 @@ class RepositoryWhereTest extends TestCase
     {
         return [
             [
-                ['price', 100.00, 200.00],
+                ['id = 1'],
             ],
             [
-                ['price', 100.00, 200.00, 'AND'],
+                ['id = 1'],
             ],
             [
-                ['price', 100.00, 200.00, 'OR'],
+                ['id = 1'],
             ],
             [
-                ['price', [100.00, 200.00]],
+                ['id <>  1'],
             ],
             [
-                ['price', [100.00, 200.00], 'AND'],
+                ['id <> 1'],
             ],
             [
-                ['price', [100.00, 200.00], 'OR'],
+                ['id <> 1'],
             ],
             [
-                ['registered_at', '1980-01-01', '1999-12-31'],
+                ['id != 1'],
             ],
             [
-                ['registered_at', '1980-01-01', '1999-12-31', 'AND'],
+                ['id != 1'],
             ],
             [
-                ['registered_at', '1980-01-01', '1999-12-31', 'OR'],
+                ['id != 1'],
             ],
             [
-                ['registered_at', ['1980-01-01', '1999-12-31']],
+                ['email LIKE a%'],
             ],
             [
-                ['registered_at', ['1980-01-01', '1999-12-31'], 'AND'],
+                ['email LIKE %@gmail.com'],
             ],
             [
-                ['registered_at', ['1980-01-01', '1999-12-31'], 'OR'],
+                ['email LIKE %test%'],
+            ],
+            [
+                ['email NOT LIKE a%'],
+            ],
+            [
+                ['email NOT LIKE %@gmail.com'],
+            ],
+            [
+                ['email NOT LIKE %test% OR'],
+            ],
+            [
+                ['name NOT LIKE Mary%'],
+            ],
+            [
+                ['name NOT LIKE %Jane'],
+            ],
+            [
+                ['name NOT LIKE %ary Jan%'],
+            ],
+            [
+                ["name LIKE '%oe Do%'"],
+            ],
+            [
+                ['id <> 200 AND age > 20'],
+            ],
+            [
+                ["activated_at IS NOT NULL AND CAST(registered_at AS DATE) = '2019-11-29'"],
+            ],
+            [
+                ['price BETWEEN 100 AND 200 OR category_id IN (1, 2, 3)'],
             ],
         ];
     }
