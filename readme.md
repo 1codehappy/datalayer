@@ -2,12 +2,12 @@
 
 #### To Do List
 
-* [ ] Basic repository
-* [ ] Cache repository
+* [x] -Basic repository-
+* [x] -Cache repository-
 * [ ] Artisan commands
-* [ ] Check Coding Style (PSR-1 & PSR-12)
-* [ ] Run PHPMD
-* [ ] Run PHPStan
+* [x] -Check Coding Style (PSR-1 & PSR-12)-
+* [x] -Run PHPMD-
+* [x] -Run PHPStan-
 
 #### DataLayer
 
