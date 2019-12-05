@@ -32,13 +32,11 @@ class LeftJoin extends AbstractQuery
         }
 
         if (is_array($relations) === true) {
-            $builder = $this->builder;
-            $builder = $builder->leftJoin($table, function ($join) use ($relations) {
+           return $this->builder->leftJoin($table, function ($join) use ($table, $relations) {
                 foreach ($relations as $primary => $foreign) {
-                    $join->on($primary, '=', $foreign);
+                    $join->on($table, $primary, '=', $foreign);
                 }
             });
-            return $builder;
         }
 
         return $this->builder->leftJoin($table, DB::raw($relations));

@@ -82,7 +82,7 @@ class LeftJoinTest extends TestCase
                 [
                     'users',
                     function ($join) {
-                        $join->on('users.role_id', '=', 'roles.id');
+                        $join->on('users', 'users.role_id', '=', 'roles.id');
                     },
                 ],
             ],
@@ -122,14 +122,13 @@ class LeftJoinTest extends TestCase
                 [
                     'customers',
                     function ($join) {
-                        $join->on('customers.id', '=', 'orders.customer_id')
-                            ->on('customers.role_id', '=', 'roles.id');
+                        $join->on('customers', 'customers.id', '=', 'orders.customer_id')
+                            ->on('customers', 'customers.role_id', '=', 'roles.id');
                     },
                 ],
             ],
         ];
     }
-
     /**
      * @test
      */

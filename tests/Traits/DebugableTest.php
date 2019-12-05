@@ -94,11 +94,13 @@ class DebugableTest extends TestCase
 
     /**
      * @test
+     * @dataProvider additionProvider
      */
-    public function it_prints_sql_should_be_sucessful(): void
-    {
-        $sql = 'SELECT * FROM users';
-
+    public function it_prints_the_sql_from_query_should_be_successful(
+        $bindings,
+        $sql,
+        $expected
+    ): void {
         $this->model
             ->shouldReceive('newQuery')
             ->once()
@@ -106,14 +108,33 @@ class DebugableTest extends TestCase
         $this->builder
             ->shouldReceive('getBindings')
             ->once()
-            ->andReturn([]);
+            ->andReturn($bindings);
         $this->builder
             ->shouldReceive('toSql')
             ->once()
             ->andReturn($sql);
 
-        $expected = $sql . ';';
-        $actual = $this->repository->toSql();
+        $actual = $this->repository
+            ->toSql();
         $this->assertSame($expected, $actual);
+    }
+
+    /**
+     * @return array[][]
+     */
+    public function additionProvider(): array
+    {
+        return [
+            [
+                [],
+                'SELECT * FROM users',
+                'SELECT * FROM users;',
+            ],
+            [
+                ['id' => 1],
+                'SELECT * FROM users WHERE id = ?',
+                "SELECT * FROM users WHERE id = '1';",
+            ],
+        ];
     }
 }
