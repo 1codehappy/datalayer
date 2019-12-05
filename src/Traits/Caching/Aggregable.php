@@ -13,7 +13,7 @@ trait Aggregable
     {
         return $this->cache()
             ->remember(
-                $this->getCacheName($this->repository),
+                $this->getCacheName(),
                 $this->timeToLive(),
                 function () {
                     return $this->repository->count();
@@ -31,7 +31,7 @@ trait Aggregable
     {
         return $this->cache()
             ->remember(
-                $this->getCacheName($this->repository),
+                $this->getCacheName(),
                 $this->timeToLive(),
                 function () use ($column) {
                     return $this->repository->sum($column);
@@ -49,7 +49,7 @@ trait Aggregable
     {
         return $this->cache()
             ->remember(
-                $this->getCacheName($this->repository),
+                $this->getCacheName(),
                 $this->timeToLive(),
                 function () use ($column) {
                     return $this->repository->max($column);
@@ -67,7 +67,7 @@ trait Aggregable
     {
         return $this->cache()
             ->remember(
-                $this->getCacheName($this->repository),
+                $this->getCacheName(),
                 $this->timeToLive(),
                 function () use ($column) {
                     return $this->repository->min($column);
@@ -85,7 +85,7 @@ trait Aggregable
     {
         return $this->cache()
             ->remember(
-                $this->getCacheName($this->repository),
+                $this->getCacheName(),
                 $this->timeToLive(),
                 function () use ($column) {
                     return $this->repository->avg($column);

@@ -3,7 +3,7 @@
 namespace CodeHappy\DataLayer\Contracts;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 interface RepositoryInterface
@@ -12,9 +12,9 @@ interface RepositoryInterface
      * Find by ID
      *
      * @param int $resourceId
-     * @return \Illuminate\Database\Eloquent\Model|null
+     * @return mixed
      */
-    public function fetchById(int $resourceId): ?Model;
+    public function fetchById(int $resourceId);
 
     /**
      * Get all
@@ -34,7 +34,7 @@ interface RepositoryInterface
      * Paginate data
      *
      * @param int $limit
-     * @return \Illuminate\Pagination\LengthAwarePaginator
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public function paginate(int $limit = 50): LengthAwarePaginator;
 

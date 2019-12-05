@@ -51,7 +51,7 @@ class CachingRepositoryTest extends TestCase
         $this->model        = Mockery::mock(Model::class);
         $this->builder      = Mockery::mock(Builder::class);
 
-        $this->cachingRepository = new class($this->repository, $this->cache) extends CachingRepository
+        $this->cachingRepository = new class ($this->repository, $this->cache) extends CachingRepository
         {
             /**
              * @return $this
@@ -70,7 +70,7 @@ class CachingRepositoryTest extends TestCase
             }
         };
 
-        $this->cachingRepositoryWithTags = new class($this->repository, $this->cache) extends CachingRepository
+        $this->cachingRepositoryWithTags = new class ($this->repository, $this->cache) extends CachingRepository
         {
             /**
              * @var string|array
@@ -154,16 +154,24 @@ class CachingRepositoryTest extends TestCase
             ->andReturn('db_test');
 
         $this->builder
-            ->shouldReceive('toRawSql')
+            ->shouldReceive('getBindings')
             ->once()
-            ->andReturn('SELECT * FROM users WHERE id = 1234');
+            ->andReturn([]);
+
+        $this->builder
+            ->shouldReceive('toSql')
+            ->once()
+            ->andReturn('SELECT * FROM users');
 
         $this->cache
             ->shouldReceive('remember')
             ->once()
             ->andReturn($this->model);
 
-        $this->assertInstanceOf(Model::class, $this->cachingRepository->fetchById(1234));
+        $this->assertInstanceOf(
+            Model::class,
+            $this->cachingRepository->fetchById(1234)
+        );
     }
 
     /**
@@ -187,7 +195,12 @@ class CachingRepositoryTest extends TestCase
             ->andReturn('db_test');
 
         $this->builder
-            ->shouldReceive('toRawSql')
+            ->shouldReceive('getBindings')
+            ->once()
+            ->andReturn([]);
+
+        $this->builder
+            ->shouldReceive('toSql')
             ->once()
             ->andReturn('SELECT * FROM users');
 
@@ -220,7 +233,12 @@ class CachingRepositoryTest extends TestCase
             ->andReturn('db_test');
 
         $this->builder
-            ->shouldReceive('toRawSql')
+            ->shouldReceive('getBindings')
+            ->once()
+            ->andReturn([]);
+
+        $this->builder
+            ->shouldReceive('toSql')
             ->once()
             ->andReturn('SELECT * FROM users');
 
@@ -253,9 +271,14 @@ class CachingRepositoryTest extends TestCase
             ->andReturn('db_test');
 
         $this->builder
-            ->shouldReceive('toRawSql')
+            ->shouldReceive('getBindings')
             ->once()
-            ->andReturn('SELECT * FROM users LIMIT 1');
+            ->andReturn([]);
+
+        $this->builder
+            ->shouldReceive('toSql')
+            ->once()
+            ->andReturn('SELECT * FROM users');
 
         $this->cache
             ->shouldReceive('remember')
@@ -286,9 +309,14 @@ class CachingRepositoryTest extends TestCase
             ->andReturn('db_test');
 
         $this->builder
-            ->shouldReceive('toRawSql')
+            ->shouldReceive('getBindings')
             ->once()
-            ->andReturn('SELECT * FROM users LIMIT 50 OFFSET 0');
+            ->andReturn([]);
+
+        $this->builder
+            ->shouldReceive('toSql')
+            ->once()
+            ->andReturn('SELECT * FROM users');
 
         $this->cache
             ->shouldReceive('remember')
@@ -389,7 +417,12 @@ class CachingRepositoryTest extends TestCase
             ->andReturn('db_test');
 
         $this->builder
-            ->shouldReceive('toRawSql')
+            ->shouldReceive('getBindings')
+            ->once()
+            ->andReturn([]);
+
+        $this->builder
+            ->shouldReceive('toSql')
             ->once()
             ->andReturn('SELECT COUNT(id) FROM users');
 
@@ -425,7 +458,12 @@ class CachingRepositoryTest extends TestCase
             ->andReturn('db_test');
 
         $this->builder
-            ->shouldReceive('toRawSql')
+            ->shouldReceive('getBindings')
+            ->once()
+            ->andReturn([]);
+
+        $this->builder
+            ->shouldReceive('toSql')
             ->once()
             ->andReturn('SELECT SUM(price) FROM products');
 
@@ -461,7 +499,12 @@ class CachingRepositoryTest extends TestCase
             ->andReturn('db_test');
 
         $this->builder
-            ->shouldReceive('toRawSql')
+            ->shouldReceive('getBindings')
+            ->once()
+            ->andReturn([]);
+
+        $this->builder
+            ->shouldReceive('toSql')
             ->once()
             ->andReturn('SELECT MAX(pageviews) FROM visits');
 
@@ -497,10 +540,14 @@ class CachingRepositoryTest extends TestCase
             ->andReturn('db_test');
 
         $this->builder
-            ->shouldReceive('toRawSql')
+            ->shouldReceive('getBindings')
+            ->once()
+            ->andReturn([]);
+
+        $this->builder
+            ->shouldReceive('toSql')
             ->once()
             ->andReturn('SELECT MIN(birth_date) FROM users');
-
 
         $expected = '1978-09-17';
         $this->cache
@@ -534,7 +581,12 @@ class CachingRepositoryTest extends TestCase
             ->andReturn('db_test');
 
         $this->builder
-            ->shouldReceive('toRawSql')
+            ->shouldReceive('getBindings')
+            ->once()
+            ->andReturn([]);
+
+        $this->builder
+            ->shouldReceive('toSql')
             ->once()
             ->andReturn('SELECT AVG(age) FROM users');
 
@@ -547,5 +599,59 @@ class CachingRepositoryTest extends TestCase
         $actual = $this->cachingRepository->avg('age');
 
         $this->assertSame($expected, $actual);
+    }
+
+    /**
+     * @test
+     * @dataProvider additionProvider
+     */
+    public function it_gets_the_cache_name_should_be_successful($database, $sql): void
+    {
+        $this->repository
+            ->shouldReceive('builder')
+            ->twice()
+            ->andReturn($this->builder);
+
+        $this->builder
+            ->shouldReceive('getConnection')
+            ->once()
+            ->andReturn($this->connection);
+
+        $this->connection
+            ->shouldReceive('getDatabaseName')
+            ->once()
+            ->andReturn($database);
+
+        $this->builder
+            ->shouldReceive('getBindings')
+            ->once()
+            ->andReturn([]);
+
+        $this->builder
+            ->shouldReceive('toSql')
+            ->once()
+            ->andReturn($sql);
+
+        $expected = md5($database . '|' . $sql . ';');
+        $actual = $this->cachingRepository
+            ->getCacheName();
+        $this->assertSame($expected, $actual);
+    }
+
+    /**
+     * @return array[][]
+     */
+    public function additionProvider(): array
+    {
+        return [
+            [
+                'test1',
+                'SELECT * FROM users WHERE id = 123',
+            ],
+            [
+                'test2',
+                'SELECT SUM(price) FROM products WHERE name LIKE \'a%\'',
+            ],
+        ];
     }
 }

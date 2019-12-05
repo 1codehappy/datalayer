@@ -2,37 +2,25 @@
 
 namespace CodeHappy\DataLayer\Tests\Traits;
 
+use Illuminate\Container\Container as App;
+use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\App as Facade;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use CodeHappy\DataLayer\Traits\Cacheable;
+use CodeHappy\DataLayer\CachingRepository;
 use CodeHappy\DataLayer\Repository;
 use CodeHappy\DataLayer\Tests\TestCase;
+use BadMethodCallException;
 use Mockery;
 
 class CacheableTest extends TestCase
 {
-    use Cacheable;
-
     /**
-     * @var \Illuminate\Database\Connection
+     * @var \Illuminate\Container\Container
      */
-    protected $connection;
-
-    /**
-     * @var Repository
-     */
-    protected $repository;
-
-    /**
-     * @var \Illuminate\Cache\Repository
-     */
-    protected $cache;
-
-    /**
-     * @var \Illuminate\Database\Eloquent\Model
-     */
-    protected $model;
+    protected $app;
 
     /**
      * @var \Illuminate\Database\Eloquent\Builder
@@ -40,62 +28,109 @@ class CacheableTest extends TestCase
     protected $builder;
 
     /**
+     * @var \CodeHappy\DataLayer\Repository
+     */
+    protected $repository;
+
+    /**
+     * @var \CodeHappy\DataLayer\CachingRepository
+     */
+    protected $cachingRepository;
+
+    /**
+     * @var \Illuminate\Database\Eloquent\Model
+     */
+    protected $model;
+
+    /**
      * @return void
      */
     protected function setUp(): void
     {
-        $this->connection   = Mockery::mock(Connection::class);
-        $this->repository   = Mockery::mock(Repository::class);
-        $this->model        = Mockery::mock(Model::class);
-        $this->builder      = Mockery::mock(Builder::class);
+        $this->builder  = Mockery::mock(Builder::class);
+        $this->model    = Mockery::mock(Model::class);
+        $this->application = Mockery::mock(Application::class);
+        $this->cachingRepository = Mockery::mock(CachingRepository::class);
+
+        $this->app = Mockery::mock(App::class);
+        $this->app
+            ->shouldReceive('make')
+            ->with(Model::class)
+            ->twice()
+            ->andReturn($this->model);
+
+        $this->repository = new class ($this->app) extends Repository
+        {
+            /**
+             * @return $this
+             */
+            public function instance(): self
+            {
+                return $this;
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            public function model(): string
+            {
+                return Model::class;
+            }
+        };
+
+        $this->repositoryUsesCacheable = new class ($this->app) extends Repository
+        {
+            use Cacheable;
+
+            public $cachingRepository;
+
+            /**
+             * @return $this
+             */
+            public function instance(): self
+            {
+                return $this;
+            }
+
+            /**
+             * {@inheritDoc}
+             */
+            public function model(): string
+            {
+                return Model::class;
+            }
+        };
+
+        $this->repositoryUsesCacheable->cachingRepository = Mockery::mock(CachingRepository::class);
     }
 
     /**
      * @test
-     * @dataProvider additionProvider
      */
-    public function it_gets_the_cache_name_should_be_successful($database, $sql): void
+    public function it_raises_an_error_should_be_successful(): void
     {
-        $this->repository
-            ->shouldReceive('builder')
-            ->twice()
-            ->andReturn($this->builder);
-
-        $this->builder
-            ->shouldReceive('getConnection')
-            ->once()
-            ->andReturn($this->connection);
-
-        $this->connection
-            ->shouldReceive('getDatabaseName')
-            ->once()
-            ->andReturn($database);
-
-        $this->builder
-            ->shouldReceive('toRawSql')
-            ->once()
-            ->andReturn($sql);
-
-        $expected = md5($database . '|' . $sql);
-        $actual = $this->getCacheName($this->repository);
-
-        $this->assertSame($expected, $actual);
+        $this->expectException(BadMethodCallException::class);
+        $this->assertNull($this->repository->cached());
     }
 
     /**
-     * @return array[][]
+     * @test
      */
-    public function additionProvider(): array
+    public function it_calls_the_caching_repository_should_be_successful(): void
     {
-        return [
-            [
-                'test1',
-                'SELECT * FROM users WHERE id = 123',
-            ],
-            [
-                'test2',
-                'SELECT SUM(price) FROM products WHERE name LIKE \'a%\'',
-            ],
-        ];
+        Facade::shouldReceive('getInstance')
+            ->once()
+            ->andReturn($this->application);
+
+        $this->application
+            ->shouldReceive('make')
+            ->with(CachingRepository::class)
+            ->once()
+            ->andReturn($this->cachingRepository);
+
+        $this->assertInstanceOf(
+            CachingRepository::class,
+            $this->repositoryUsesCacheable->cached()
+        );
     }
 }

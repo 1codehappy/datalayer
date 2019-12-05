@@ -3,14 +3,15 @@
 namespace CodeHappy\DataLayer;
 
 use Illuminate\Container\Container as App;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use CodeHappy\DataLayer\Contracts\AggregationInterface;
 use CodeHappy\DataLayer\Contracts\RepositoryInterface;
 use CodeHappy\DataLayer\Traits\Aggregable;
 use CodeHappy\DataLayer\Traits\Aliases;
+use CodeHappy\DataLayer\Traits\Massable;
 use CodeHappy\DataLayer\Traits\Queryable;
 
 abstract class Repository implements
@@ -19,6 +20,7 @@ abstract class Repository implements
 {
     use Aggregable;
     use Aliases;
+    use Massable;
     use Queryable;
 
     /**
@@ -27,7 +29,7 @@ abstract class Repository implements
     protected $model;
 
     /**
-     * @var Illuminate\Database\Eloquent\Builder|null
+     * @var \Illuminate\Database\Eloquent\Builder|null
      */
     protected $builder;
 
@@ -77,11 +79,12 @@ abstract class Repository implements
     /**
      * {@inheritDoc}
      */
-    public function fetchById(int $resourceId): ?Model
+    public function fetchById(int $resourceId)
     {
         return $this
             ->newQuery()
-            ->builder()->find($resourceId);
+            ->builder()
+            ->find($resourceId);
     }
 
     /**

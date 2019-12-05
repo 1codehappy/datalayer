@@ -55,7 +55,7 @@ class RepositoryEagerLoadingTest extends TestCase
             ->once()
             ->andReturn($this->model);
 
-        $this->repository = new class($this->app) extends Repository implements
+        $this->repository = new class ($this->app) extends Repository implements
             EagerLoadingInterface
         {
             /**

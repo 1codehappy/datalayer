@@ -130,7 +130,7 @@ class Factory
      * Apply inner join relationship
      *
      * @param string $table
-     * @param \Closure|array $relations
+     * @param \Closure|array|string $relations
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function innerJoin(string $table, $relations): Builder

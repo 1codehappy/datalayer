@@ -17,5 +17,4 @@ trait Queryable
     use Showable;
     use Sortable;
     use Summariable;
-    use Massable;
 }

@@ -48,7 +48,7 @@ class AggregableTest extends TestCase
         $this->cache        = Mockery::mock(Cache::class);
         $this->builder      = Mockery::mock(Builder::class);
 
-        $this->cachingRepository = new class($this->repository, $this->cache) extends CachingRepository
+        $this->cachingRepository = new class ($this->repository, $this->cache) extends CachingRepository
         {
             /**
              * @return $this
@@ -105,7 +105,12 @@ class AggregableTest extends TestCase
             ->andReturn('db_test');
 
         $this->builder
-            ->shouldReceive('toRawSql')
+            ->shouldReceive('getBindings')
+            ->once()
+            ->andReturn([]);
+
+        $this->builder
+            ->shouldReceive('toSql')
             ->once()
             ->andReturn('SELECT COUNT(id) FROM users');
 
@@ -140,7 +145,12 @@ class AggregableTest extends TestCase
             ->andReturn('db_test');
 
         $this->builder
-            ->shouldReceive('toRawSql')
+            ->shouldReceive('getBindings')
+            ->once()
+            ->andReturn([]);
+
+        $this->builder
+            ->shouldReceive('toSql')
             ->once()
             ->andReturn('SELECT SUM(price) FROM products');
 
@@ -175,9 +185,14 @@ class AggregableTest extends TestCase
             ->andReturn('db_test');
 
         $this->builder
-            ->shouldReceive('toRawSql')
+            ->shouldReceive('getBindings')
             ->once()
-            ->andReturn('SELECT SUM(price) FROM products');
+            ->andReturn([]);
+
+        $this->builder
+            ->shouldReceive('toSql')
+            ->once()
+            ->andReturn('SELECT MAX(price) FROM products');
 
         $expected = 1234567890;
         $this->cache
@@ -210,7 +225,12 @@ class AggregableTest extends TestCase
             ->andReturn('db_test');
 
         $this->builder
-            ->shouldReceive('toRawSql')
+            ->shouldReceive('getBindings')
+            ->once()
+            ->andReturn([]);
+
+        $this->builder
+            ->shouldReceive('toSql')
             ->once()
             ->andReturn('SELECT MIN(birth_date) FROM users');
 
@@ -245,9 +265,14 @@ class AggregableTest extends TestCase
             ->andReturn('db_test');
 
         $this->builder
-            ->shouldReceive('toRawSql')
+            ->shouldReceive('getBindings')
             ->once()
-            ->andReturn('SELECT MIN(birth_date) FROM users');
+            ->andReturn([]);
+
+        $this->builder
+            ->shouldReceive('toSql')
+            ->once()
+            ->andReturn('SELECT AVG(age) FROM users');
 
         $expected = 22.5;
         $this->cache

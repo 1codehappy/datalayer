@@ -9,10 +9,21 @@
     <description>
         DataLayer PHPMD
     </description>
-    <rule ref="rulesets/cleancode.xml" />
-    <rule ref="rulesets/codesize.xml" />
+    <rule ref="rulesets/cleancode.xml">
+        <exclude name="StaticAccess" />
+    </rule>
+    <rule ref="rulesets/codesize.xml/TooManyPublicMethods">
+        <properties>
+            <property name="maxmethods" value="15" />
+        </properties>
+    </rule>
     <rule ref="rulesets/controversial.xml" />
     <rule ref="rulesets/design.xml" />
-    <rule ref="rulesets/naming.xml" />
+    <rule ref="rulesets/naming.xml/ShortMethodName">
+    <properties>
+            <property name="minimum" value="2" />
+        </properties>
+    </rule>
     <rule ref="rulesets/unusedcode.xml" />
+    <exclude-pattern>src/Queries/Factory.php</exclude-pattern>
 </ruleset>

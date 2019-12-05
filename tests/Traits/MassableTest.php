@@ -1,18 +1,18 @@
 <?php
 
-namespace CodeHappy\DataLayer\Tests\Traits\Queries;
+namespace CodeHappy\DataLayer\Tests\Traits;
 
 use Illuminate\Container\Container as App;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use CodeHappy\DataLayer\Contracts\Queries\SortInterface;
 use CodeHappy\DataLayer\Facades\QueryFactory;
 use CodeHappy\DataLayer\Queries\Factory;
 use CodeHappy\DataLayer\Repository;
+use CodeHappy\DataLayer\Traits\Massable;
 use CodeHappy\DataLayer\Tests\TestCase;
 use Mockery;
 
-class RepositorySortingTest extends TestCase
+class MassableTest extends TestCase
 {
     /**
      * @var \Illuminate\Container\Container
@@ -25,14 +25,14 @@ class RepositorySortingTest extends TestCase
     protected $builder;
 
     /**
-     * @var \CodeHappy\DataLayer\Repository
-     */
-    protected $repository;
-
-    /**
      * @var \Illuminate\Database\Eloquent\Model
      */
     protected $model;
+
+    /**
+     * @var \CodeHappy\DataLayer\Repository
+     */
+    protected $repository;
 
     /**
      * @var \CodeHappy\DataLayer\Queries\Factory
@@ -55,9 +55,10 @@ class RepositorySortingTest extends TestCase
             ->once()
             ->andReturn($this->model);
 
-        $this->repository = new class ($this->app) extends Repository implements
-            SortInterface
+        $this->repository = new class ($this->app) extends Repository
         {
+            use Massable;
+
             /**
              * @return $this
              */
@@ -94,9 +95,8 @@ class RepositorySortingTest extends TestCase
 
     /**
      * @test
-     * @dataProvider additionProvider
      */
-    public function it_sorts_by_should_be_successful($params): void
+    public function it_updates_data_from_query_should_be_successfull(): void
     {
         $this->model
             ->shouldReceive('newQuery')
@@ -109,57 +109,54 @@ class RepositorySortingTest extends TestCase
             ->andReturn($this->factory);
 
         $this->factory
-            ->shouldReceive('orderBy')
-            ->with(...$params)
+            ->shouldReceive('where')
+            ->with('active IS NULL')
             ->once()
             ->andReturn($this->builder);
 
-        $this->assertInstanceOf(
-            SortInterface::class,
-            $this->repository->orderBy(...$params)
-        );
+        $expected = 123;
+        $this->builder
+            ->shouldReceive('update')
+            ->with(['active' => 1])
+            ->once()
+            ->andReturn($expected);
+
+        $actual = $this->repository
+            ->where('active IS NULL')
+            ->updateAll(['active' => 1]);
+        $this->assertSame($expected, $actual);
     }
 
     /**
-     * @return array[][]
+     * @test
      */
-    public function additionProvider(): array
+    public function it_deletes_rows_from_query_should_be_successfull(): void
     {
-        return [
-            [
-                ['id, name, email, registered_at'],
-            ],
-            [
-                ['id', 'name', 'email', 'registered_at'],
-            ],
-            [
-                ['id DESC'],
-            ],
-            [
-                ['id', 'DESC'],
-            ],
-            [
-                ['id, name DESC, created_at'],
-            ],
-            [
-                [
-                    ['id', 'name' => 'DESC', 'created_at'],
-                ],
-            ],
-            [
-                ['id ASC, name DESC'],
-            ],
-            [
-                ['id ASC', 'name DESC'],
-            ],
-            [
-                [
-                    ['id ASC', 'name DESC'],
-                ],
-            ],
-            [
-                ['id DESC', 'name ASC']
-            ],
-        ];
+        $this->model
+            ->shouldReceive('newQuery')
+            ->once()
+            ->andReturn($this->builder);
+
+        QueryFactory::shouldReceive('load')
+            ->with($this->builder, $this->repository)
+            ->once()
+            ->andReturn($this->factory);
+
+        $this->factory
+            ->shouldReceive('where')
+            ->with('active = 0')
+            ->once()
+            ->andReturn($this->builder);
+
+        $expected = 456;
+        $this->builder
+            ->shouldReceive('delete')
+            ->once()
+            ->andReturn($expected);
+
+        $actual = $this->repository
+            ->where('active = 0')
+            ->deleteAll();
+        $this->assertSame($expected, $actual);
     }
 }

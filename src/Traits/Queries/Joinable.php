@@ -47,7 +47,7 @@ trait Joinable
      */
     public function rightJoin(string $table, $relations)
     {
-        $this->builder = QueryFactoryQueryFactory::load($this->builder(), $this)
+        $this->builder = QueryFactory::load($this->builder(), $this)
             ->rightJoin($table, $relations);
         return $this;
     }

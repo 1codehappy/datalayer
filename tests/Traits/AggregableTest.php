@@ -46,7 +46,7 @@ class AggregableTest extends TestCase
             ->once()
             ->andReturn($this->model);
 
-        $this->repository = new class($this->app) extends Repository
+        $this->repository = new class ($this->app) extends Repository
         {
             /**
              * @return $this

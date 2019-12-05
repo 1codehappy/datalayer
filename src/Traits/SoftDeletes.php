@@ -25,7 +25,7 @@ trait SoftDeletes
     public function onlyTrashed()
     {
         return $this->builder()
-            ->withTrashed();
+            ->onlyTrashed();
     }
 
     /**
@@ -35,6 +35,13 @@ trait SoftDeletes
      */
     public function restoreFromTrash(): ?bool
     {
-        return $this->builder()->restore();
+        $result = $this->builder()->restore();
+        if (
+            $result === true &&
+            method_exists($this, 'clearCache') === true
+        ) {
+            $this->clearCache();
+        }
+        return $result;
     }
 }

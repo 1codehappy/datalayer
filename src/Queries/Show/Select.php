@@ -24,7 +24,7 @@ class Select extends AbstractQuery
         }
         $columns = [];
         foreach ($args as $column) {
-           $columns[] = DB::raw(trim($column));
+            $columns[] = DB::raw(trim($column));
         }
         return $this->builder->select($columns);
     }

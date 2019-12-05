@@ -3,21 +3,26 @@
 namespace CodeHappy\DataLayer;
 
 use Illuminate\Cache\Repository as Cache;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use CodeHappy\DataLayer\Contracts\AggregationInterface;
 use CodeHappy\DataLayer\Contracts\RepositoryInterface;
 use CodeHappy\DataLayer\Repository;
 use CodeHappy\DataLayer\Traits\Caching\Aggregable;
+use CodeHappy\DataLayer\Traits\Caching\Massable;
+use CodeHappy\DataLayer\Traits\Debugable;
 use CodeHappy\DataLayer\Traits\Queryable;
-use BadMethodRequestException;
+use BadMethodCallException;
 
 abstract class CachingRepository implements
     RepositoryInterface,
     AggregationInterface
 {
     use Aggregable;
+    use Debugable;
+    use Massable;
     use Queryable;
 
     /**
@@ -55,6 +60,16 @@ abstract class CachingRepository implements
     abstract public function timeToLive(): int;
 
     /**
+     * Get builder
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function builder(): Builder
+    {
+        return $this->repository->builder();
+    }
+
+    /**
      * Get cache repository
      *
      * @return \Illuminate\Cache\Repository
@@ -71,29 +86,28 @@ abstract class CachingRepository implements
     /**
      * Get cache name
      *
-     * @param \CodeHappy\DataLayer\Repository $repository
      * @return string
      */
-    public function getCacheName(Repository $repository): string
+    public function getCacheName(): string
     {
-        $database = $repository
+        $database = $this->repository
             ->builder()
             ->getConnection()
             ->getDatabaseName();
 
-        $rawSql = $repository->builder()->toRawSql();
+        $sql = $this->toSql();
 
-        return  md5($database . '|' . $rawSql);
+        return  md5($database . '|' . $sql);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function fetchById(int $resourceId): ?Model
+    public function fetchById(int $resourceId)
     {
         return $this->cache()
             ->remember(
-                $this->getCacheName($this->repository),
+                $this->getCacheName(),
                 $this->timeToLive(),
                 function () use ($resourceId) {
                     return $this->repository->fetchById($resourceId);
@@ -110,7 +124,7 @@ abstract class CachingRepository implements
     {
         return $this->cache()
             ->remember(
-                $this->getCacheName($this->repository),
+                $this->getCacheName(),
                 $this->timeToLive(),
                 function () {
                     return $this->repository->fetchAll();
@@ -125,7 +139,7 @@ abstract class CachingRepository implements
     {
         return $this->cache()
             ->remember(
-                $this->getCacheName($this->repository),
+                $this->getCacheName(),
                 $this->timeToLive(),
                 function () {
                     return $this->repository->fetch();
@@ -140,7 +154,7 @@ abstract class CachingRepository implements
     {
         return $this->cache()
             ->remember(
-                $this->getCacheName($this->repository),
+                $this->getCacheName(),
                 $this->timeToLive(),
                 function () {
                     return $this->repository->fetchFirst();
@@ -155,7 +169,7 @@ abstract class CachingRepository implements
     {
         return $this->cache()
             ->remember(
-                $this->getCacheName($this->repository),
+                $this->getCacheName(),
                 $this->timeToLive(),
                 function () use ($limit) {
                     return $this->repository->paginate($limit);
@@ -170,7 +184,7 @@ abstract class CachingRepository implements
     {
         $model = $this->repository->create($data);
         if ($model instanceof Model) {
-            $this->cache()->clear();
+            $this->clearCache();
         }
         return $model;
     }
@@ -182,7 +196,7 @@ abstract class CachingRepository implements
     {
         $model = $this->repository->update($data, $resourceId);
         if ($model instanceof Model) {
-            $this->cache()->clear();
+            $this->clearCache();
         }
         return $model;
     }
@@ -194,7 +208,7 @@ abstract class CachingRepository implements
     {
         $count = $this->repository->delete($resourceIds);
         if ($count > 0) {
-            $this->cache()->clear();
+            $this->clearCache();
         }
         return $count;
     }
@@ -206,7 +220,7 @@ abstract class CachingRepository implements
     {
         return $this->cache()
             ->remember(
-                $this->getCacheName($this->repository),
+                $this->getCacheName(),
                 $this->timeToLive(),
                 function () {
                     return $this->repository->distinct();
@@ -215,21 +229,12 @@ abstract class CachingRepository implements
     }
 
     /**
-     * {@inheritDoc}
+     * Clear cache
+     *
+     * @return bool
      */
-    public function restoreFromTrash(): ?bool
+    public function clearCache(): bool
     {
-        if (method_exists($this->repository, 'restoreFromTrash') === false) {
-            $class = get_class($this->repository);
-            throw new BadMethodCallException("Call to undefined method {$class}::restoreFromTrash()");
-        }
-
-        $isRestored = $this->repository
-            ->restoreFromTrash();
-        if ($isRestored === true) {
-            $this->cache()
-                ->clear();
-        }
-        return $isRestored;
+        return $this->cache()->clear();
     }
 }

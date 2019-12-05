@@ -9,6 +9,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 use CodeHappy\DataLayer\Contracts\Queries\JoinInterface;
 use CodeHappy\DataLayer\Facades\QueryFactory;
+use CodeHappy\DataLayer\Queries\Factory;
 use CodeHappy\DataLayer\Repository;
 use CodeHappy\DataLayer\Tests\TestCase;
 use Mockery;
@@ -47,6 +48,7 @@ class RepositoryJoinableTest extends TestCase
     {
         $this->builder  = Mockery::mock(Builder::class);
         $this->model    = Mockery::mock(Model::class);
+        $this->factory  = Mockery::mock(Factory::class);
 
         $this->app = Mockery::mock(App::class);
         $this->app
@@ -55,7 +57,7 @@ class RepositoryJoinableTest extends TestCase
             ->once()
             ->andReturn($this->model);
 
-        $this->repository = new class($this->app) extends Repository implements
+        $this->repository = new class ($this->app) extends Repository implements
             JoinInterface
         {
             /**
@@ -98,14 +100,31 @@ class RepositoryJoinableTest extends TestCase
      */
     public function it_creates_inner_join_relationship_should_be_successful($params): void
     {
-        QueryFactory::shouldReceive('innerJoin')
-            ->shouldReceive(...$params)
+        $this->model
+            ->shouldReceive('newQuery')
             ->once()
             ->andReturn($this->builder);
 
-        $actual = $this->repository
-            ->innerJoin(...$params);
-        $this->assertInstanceOf(JoinInterface::class, $actual);
+        QueryFactory::shouldReceive('load')
+            ->with($this->builder, $this->repository)
+            ->twice()
+            ->andReturn($this->factory);
+
+        $this->factory
+            ->shouldReceive('innerJoin')
+            ->with(...$params)
+            ->twice()
+            ->andReturn($this->builder);
+
+        $this->assertInstanceOf(
+            JoinInterface::class,
+            $this->repository->innerJoin(...$params)
+        );
+
+        $this->assertInstanceOf(
+            JoinInterface::class,
+            $this->repository->join(...$params)
+        );
     }
 
     /**
@@ -114,14 +133,31 @@ class RepositoryJoinableTest extends TestCase
      */
     public function it_creates_left_join_relationship_should_be_successful($params): void
     {
-        QueryFactory::shouldReceive('leftJoin')
-            ->shouldReceive(...$params)
+        $this->model
+            ->shouldReceive('newQuery')
             ->once()
             ->andReturn($this->builder);
 
-        $actual = $this->repository
-            ->leftJoin(...$params);
-        $this->assertInstanceOf(JoinInterface::class, $actual);
+        QueryFactory::shouldReceive('load')
+            ->with($this->builder, $this->repository)
+            ->twice()
+            ->andReturn($this->factory);
+
+        $this->factory
+            ->shouldReceive('leftJoin')
+            ->with(...$params)
+            ->twice()
+            ->andReturn($this->builder);
+
+        $this->assertInstanceOf(
+            JoinInterface::class,
+            $this->repository->leftJoin(...$params)
+        );
+
+        $this->assertInstanceOf(
+            JoinInterface::class,
+            $this->repository->ljoin(...$params)
+        );
     }
 
     /**
@@ -130,30 +166,31 @@ class RepositoryJoinableTest extends TestCase
      */
     public function it_creates_right_join_relationship_should_be_successful($params): void
     {
-        QueryFactory::shouldReceive('rightJoin')
-            ->shouldReceive(...$params)
+        $this->model
+            ->shouldReceive('newQuery')
             ->once()
             ->andReturn($this->builder);
 
-        $actual = $this->repository
-            ->rightJoin(...$params);
-        $this->assertInstanceOf(JoinInterface::class, $actual);
-    }
+        QueryFactory::shouldReceive('load')
+            ->with($this->builder, $this->repository)
+            ->twice()
+            ->andReturn($this->factory);
 
-    /**
-     * @test
-     * @dataProvider additionProvider
-     */
-    public function it_tests_the_alias_should_be_successful($params): void
-    {
-        QueryFactory::shouldReceive('innerJoin')
-            ->shouldReceive(...$params)
-            ->once()
+        $this->factory
+            ->shouldReceive('rightJoin')
+            ->with(...$params)
+            ->twice()
             ->andReturn($this->builder);
 
-        $actual = $this->repository
-            ->join(...$params);
-        $this->assertInstanceOf(JoinInterface::class, $actual);
+        $this->assertInstanceOf(
+            JoinInterface::class,
+            $this->repository->rightJoin(...$params)
+        );
+
+        $this->assertInstanceOf(
+            JoinInterface::class,
+            $this->repository->rjoin(...$params)
+        );
     }
 
     /**
@@ -172,11 +209,8 @@ class RepositoryJoinableTest extends TestCase
             ],
             [
                 [
-                    'order_items',
-                    [
-                        'orders.id' => 'order_items.order_id',
-                        'products.id' => 'order_items.product_id',
-                    ],
+                    'customers',
+                    'customers.id = orders.customer_id',
                 ],
             ],
             [
@@ -185,6 +219,21 @@ class RepositoryJoinableTest extends TestCase
                     function ($join) {
                         $join->on('customers.id', '=', 'orders.customer_id');
                     },
+                ],
+            ],
+            [
+                [
+                    'order_items',
+                    'orders.id = order_items.order_id AND products.id = order_items.product_id',
+                ],
+            ],
+            [
+                [
+                    'order_items',
+                    [
+                        'orders.id' => 'order_items.order_id',
+                        'products.id' => 'order_items.product_id',
+                    ],
                 ],
             ],
             [

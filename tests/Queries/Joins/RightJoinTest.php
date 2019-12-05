@@ -4,13 +4,13 @@ namespace CodeHappy\DataLayer\Tests\Queries\Joins;
 
 use Illuminate\Database\Eloquent\Builder;
 use CodeHappy\DataLayer\Contracts\RepositoryInterface;
-use CodeHappy\DataLayer\Queries\Joins\InnerJoin as Query;
+use CodeHappy\DataLayer\Queries\Joins\RightJoin as Query;
 use CodeHappy\DataLayer\Tests\TestCase;
 use Closure;
 use InvalidArgumentException;
 use Mockery;
 
-class InnerJoinTest extends TestCase
+class RightJoinTest extends TestCase
 {
     /**
      * @var \Illuminate\Database\Eloquent\Builder
@@ -55,7 +55,7 @@ class InnerJoinTest extends TestCase
         };
 
         $this->builder
-            ->shouldReceive('join')
+            ->shouldReceive('rightJoin')
             ->with($table, Mockery::on($join))
             ->once()
             ->andReturn($this->builder);

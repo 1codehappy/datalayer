@@ -1,18 +1,19 @@
 <?php
 
-namespace CodeHappy\DataLayer\Tests\Traits\Queries;
+namespace CodeHappy\DataLayer\Tests\Traits;
 
 use Illuminate\Container\Container as App;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use CodeHappy\DataLayer\Contracts\Queries\ConditionInterface;
 use CodeHappy\DataLayer\Facades\QueryFactory;
 use CodeHappy\DataLayer\Queries\Factory;
 use CodeHappy\DataLayer\Repository;
+use CodeHappy\DataLayer\Traits\Debugable;
+use CodeHappy\DataLayer\Traits\SoftDeletes;
 use CodeHappy\DataLayer\Tests\TestCase;
 use Mockery;
 
-class RepositoryIsNullOrNotTest extends TestCase
+class SoftDeletesTest extends TestCase
 {
     /**
      * @var \Illuminate\Container\Container
@@ -25,14 +26,14 @@ class RepositoryIsNullOrNotTest extends TestCase
     protected $builder;
 
     /**
-     * @var \CodeHappy\DataLayer\Repository
-     */
-    protected $repository;
-
-    /**
      * @var \Illuminate\Database\Eloquent\Model
      */
     protected $model;
+
+    /**
+     * @var \CodeHappy\DataLayer\Repository
+     */
+    protected $repository;
 
     /**
      * @var \CodeHappy\DataLayer\Queries\Factory
@@ -55,9 +56,11 @@ class RepositoryIsNullOrNotTest extends TestCase
             ->once()
             ->andReturn($this->model);
 
-        $this->repository = new class ($this->app) extends Repository implements
-            ConditionInterface
+        $this->repository = new class ($this->app) extends Repository
         {
+            use Debugable;
+            use SoftDeletes;
+
             /**
              * @return $this
              */
@@ -94,88 +97,91 @@ class RepositoryIsNullOrNotTest extends TestCase
 
     /**
      * @test
-     * @dataProvider additionProvider
      */
-    public function it_is_null_should_be_successful($args, $params): void
+    public function it_returns_all_should_be_successful(): void
     {
         $this->model
             ->shouldReceive('newQuery')
             ->once()
             ->andReturn($this->builder);
 
-        QueryFactory::shouldReceive('load')
-            ->with($this->builder, $this->repository)
-            ->twice()
-            ->andReturn($this->factory);
-
-        $this->factory
-            ->shouldReceive('isNull')
-            ->with(...$args)
-            ->twice()
+        $this->builder
+            ->shouldReceive('withTrashed')
+            ->once()
             ->andReturn($this->builder);
 
-        $this->assertInstanceOf(
-            ConditionInterface::class,
-            $this->repository->isNull(...$params)
-        );
+        $expected = 'SELECT * FROM users;';
+        $this->builder
+            ->shouldReceive('toSql')
+            ->once()
+            ->andReturn($expected);
 
-        $this->assertInstanceOf(
-            ConditionInterface::class,
-            $this->repository->null(...$params)
-        );
+        $actual = $this->repository
+            ->withTrashed()
+            ->toSql();
+        $this->assertSame($expected, $actual);
     }
 
     /**
      * @test
-     * @dataProvider additionProvider
      */
-    public function it_is_not_null_should_be_successful($args, $params): void
+    public function it_returns_only_trashed_should_be_successful(): void
     {
         $this->model
             ->shouldReceive('newQuery')
             ->once()
             ->andReturn($this->builder);
 
-        QueryFactory::shouldReceive('load')
-            ->with($this->builder, $this->repository)
-            ->twice()
-            ->andReturn($this->factory);
-
-        $this->factory
-            ->shouldReceive('isNotNull')
-            ->with(...$args)
-            ->twice()
+        $this->builder
+            ->shouldReceive('onlyTrashed')
+            ->once()
             ->andReturn($this->builder);
 
-        $this->assertInstanceOf(
-            ConditionInterface::class,
-            $this->repository->isNotNull(...$params)
-        );
+        $expected = 'SELECT * FROM users WHERE deleted_at IS NOT NULL;';
+        $this->builder
+            ->shouldReceive('toSql')
+            ->once()
+            ->andReturn($expected);
 
-        $this->assertInstanceOf(
-            ConditionInterface::class,
-            $this->repository->notNull(...$params)
-        );
+        $actual = $this->repository
+            ->onlyTrashed()
+            ->toSql();
+        $this->assertSame($expected, $actual);
     }
 
     /**
-     * @return array[][]
+     * @test
      */
-    public function additionProvider(): array
+    public function it_restores_trashed_should_be_successful(): void
     {
-        return [
-            [
-                ['test', 'AND'],
-                ['test']
-            ],
-            [
-                ['test', 'AND'],
-                ['test', 'AND'],
-            ],
-            [
-                ['test', 'OR'],
-                ['test', 'OR'],
-            ],
-        ];
+        $this->model
+            ->shouldReceive('newQuery')
+            ->once()
+            ->andReturn($this->builder);
+
+        $this->builder
+            ->shouldReceive('restore')
+            ->once()
+            ->andReturn(true);
+
+        $this->assertTrue($this->repository->restoreFromTrash());
+    }
+
+    /**
+     * @test
+     */
+    public function it_does_not_restore_trashed_should_be_successful(): void
+    {
+        $this->model
+            ->shouldReceive('newQuery')
+            ->once()
+            ->andReturn($this->builder);
+
+        $this->builder
+            ->shouldReceive('restore')
+            ->once()
+            ->andReturn(null);
+
+        $this->assertNull($this->repository->restoreFromTrash());
     }
 }

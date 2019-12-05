@@ -35,7 +35,7 @@ class FactoryBetweenTest extends TestCase
         $this->builder      = Mockery::mock(Builder::class);
         $this->repository   = Mockery::mock(RepositoryInterface::class);
 
-        $this->factory = new Factory;
+        $this->factory = new Factory();
         $this->factory->load($this->builder, $this->repository);
     }
 

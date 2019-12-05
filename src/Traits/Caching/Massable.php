@@ -1,6 +1,6 @@
 <?php
 
-namespace CodeHappy\DataLayer\Traits;
+namespace CodeHappy\DataLayer\Traits\Caching;
 
 trait Massable
 {
@@ -12,8 +12,12 @@ trait Massable
      */
     public function updateAll(array $data): int
     {
-        return $this->builder()
+        $updates = $this->builder()
             ->update($data);
+        if ($updates > 0) {
+            $this->clearCache();
+        }
+        return $updates;
     }
 
     /**
@@ -23,7 +27,11 @@ trait Massable
      */
     public function deleteAll(): int
     {
-        return $this->builder()
+        $deletes = $this->builder()
             ->delete();
+        if ($deletes > 0) {
+            $this->clearCache();
+        }
+        return $deletes;
     }
 }

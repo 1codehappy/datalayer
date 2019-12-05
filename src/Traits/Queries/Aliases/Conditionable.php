@@ -2,6 +2,8 @@
 
 namespace CodeHappy\DataLayer\Traits\Queries\Aliases;
 
+use Closure;
+
 trait Conditionable
 {
     /**

@@ -15,7 +15,7 @@ trait Conditionable
     use Aliases;
 
     /**
-     * @var \Illuminate\Database\Eloquent\Builder|null
+     * @var \Closure
      */
     protected $clausules;
 
@@ -231,7 +231,7 @@ trait Conditionable
     public function groupConditions(Closure $clausules, string $operator = 'AND')
     {
         $this->clausules = $this->model->newModelQuery();
-        call_user_func($closure, $this);
+        call_user_func($clausules, $this);
         $this->getQuery()->addNestedWhereQuery($this->clausules->getQuery(), $operator);
         $this->clausules = null;
         return $this;

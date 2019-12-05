@@ -3,6 +3,5 @@ parameters:
     - '#Access to an undefined property [a-zA-Z0-9\\_]+::\$[a-zA-Z0-9\\_]+#'
     - '#Call to an undefined static method [::a-zA-Z0-9\\_]+\(\)#'
     - "#Call to an undefined method [a-zA-Z0-9\\_]+#"
-    - '#Call to static method [a-zA-Z0-9\\_]+\(\) on an unknown class [a-zA-Z0-9\\_]+#'
   excludes_analyse:
     - %rootDir%/../../../tests/*
