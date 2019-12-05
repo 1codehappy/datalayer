@@ -1,0 +1,26 @@
+language: php
+
+cache:
+   directories:
+     - $HOME/.composer/cache/files
+
+php:
+  - 7.1
+  - 7.2
+  - 7.3
+  - 7.4snapshot
+
+matrix:
+  include:
+  - php: 7.2
+    env: COMPOSER_FLAGS="--prefer-lowest"
+
+before_script:
+  - travis_retry composer self-update
+  - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction
+
+script:
+  - vendor/bin/phpunit --coverage-text --coverage-clover=coverage.clover
+  - vendor/bin/phpcs src/ --extensions=php --standard=PSR1,PSR12
+  - vendor/bin/phpstan analyse -l 4 -c phpstan.neon src/
+  - vendor/bin/phpmd src/ text phpmd.xml
