@@ -59,6 +59,14 @@ class InnerJoin extends AbstractQuery
                     ) {
                         list($primary, $operator, $foreign) = $relation;
                     }
+                    if (
+                        isset($primary) === false ||
+                        isset($operator) === false ||
+                        isset($foreign) === false
+                    ) {
+                        continue;
+                    }
+
                     $join->on(trim($primary), $operator, trim($foreign));
                 }
             });

@@ -1,14 +1,3 @@
-!! Attention !! This library isn't already done. Soon as possible, I'll finish it.
-
-#### To Do List
-
-* [x] -Basic repository-
-* [x] -Cache repository-
-* [ ] Artisan commands
-* [x] -Check Coding Style (PSR-1 & PSR-12)-
-* [x] -Run PHPMD-
-* [x] -Run PHPStan-
-
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/c0dehappy/datalayer.svg?style=flat-square)](https://packagist.org/packages/c0dehappy/datalayer)
 [![Build Status](https://img.shields.io/travis/c0dehappy/datalayer/master.svg?style=flat-square)](https://travis-ci.org/c0dehappy/datalayer)
 [![StyleCI](https://styleci.io/repos/42480275/shield)](https://styleci.io/repos/42480275)
