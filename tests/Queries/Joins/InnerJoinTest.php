@@ -158,6 +158,15 @@ class InnerJoinTest extends TestCase
             [
                 ['users'],
             ],
+            [
+                ['users', 1],
+            ],
+            [
+                ['users', true],
+            ],
+            [
+                ['users', false],
+            ],
         ];
     }
 }
