@@ -20,13 +20,12 @@ class Limit extends AbstractQuery
     {
         $max    = func_get_args();
         $count  = count($max);
+        $max = array_pop($max);
 
-        if ($count === 0) {
+        if ($count === 0 || $max === 0) {
             return $this->builder
                 ->limit(self::DEFAULT_LIMIT);
         }
-
-        $max = array_pop($max);
         if ($count > 1 || is_int($max) === false) {
             throw new InvalidArgumentException();
         }

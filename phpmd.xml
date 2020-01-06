@@ -26,5 +26,6 @@
         </properties>
     </rule>
     <rule ref="rulesets/unusedcode.xml" />
+    <exclude-pattern>src/Helpers/Sketchy.php</exclude-pattern>
     <exclude-pattern>src/Queries/Factory.php</exclude-pattern>
 </ruleset>

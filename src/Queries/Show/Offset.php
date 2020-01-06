@@ -20,13 +20,13 @@ class Offset extends AbstractQuery
     {
         $startsAt = func_get_args();
         $count    = count($startsAt);
+        $startsAt = array_pop($startsAt);
 
-        if ($count === 0) {
+        if ($count === 0 || $startsAt === 0) {
             return $this->builder
                 ->offset(self::DEFAULT_OFFSET);
         }
 
-        $startsAt = array_pop($startsAt);
         if ($count > 1 || is_int($startsAt) === false) {
             throw new InvalidArgumentException();
         }

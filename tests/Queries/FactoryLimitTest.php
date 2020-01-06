@@ -76,7 +76,7 @@ class FactoryLimitTest extends TestCase
                 100,
             ],
             [
-                100,
+                1000,
                 1000,
             ],
         ];
