@@ -14,11 +14,6 @@ class Limit extends AbstractQuery
     protected const DEFAULT_LIMIT = 50;
 
     /**
-     * @const int
-     */
-    protected const MAX_LIMIT = 100;
-
-    /**
      * {@inheritDoc}
      */
     public function handle(): Builder
@@ -31,15 +26,12 @@ class Limit extends AbstractQuery
                 ->limit(self::DEFAULT_LIMIT);
         }
 
-        if ($count > 1 || is_int($max[0]) === false) {
+        $max = array_pop($max);
+        if ($count > 1 || is_int($max) === false) {
             throw new InvalidArgumentException();
         }
 
-        if ($max[0] === 0) {
-            $max[0] = self::DEFAULT_LIMIT;
-        }
-
         return $this->builder
-            ->limit($max[0] > self::MAX_LIMIT ? self::MAX_LIMIT : $max[0]);
+            ->limit($max);
     }
 }
