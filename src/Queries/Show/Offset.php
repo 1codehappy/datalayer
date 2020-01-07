@@ -22,7 +22,7 @@ class Offset extends AbstractQuery
         $count    = count($startsAt);
         $startsAt = array_pop($startsAt);
 
-        if ($count === 0 || $startsAt === 0) {
+        if ($count === 0) {
             return $this->builder
                 ->offset(self::DEFAULT_OFFSET);
         }
