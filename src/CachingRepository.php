@@ -165,14 +165,14 @@ abstract class CachingRepository implements
     /**
      * {@inheritDoc}
      */
-    public function paginate(int $limit = 50): LengthAwarePaginator
+    public function paginate(int $perPage = 50): LengthAwarePaginator
     {
         return $this->cache()
             ->remember(
                 $this->getCacheName(),
                 $this->timeToLive(),
-                function () use ($limit) {
-                    return $this->repository->paginate($limit);
+                function () use ($perPage) {
+                    return $this->repository->paginate($perPage);
                 }
             );
     }

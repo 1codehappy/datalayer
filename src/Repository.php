@@ -118,9 +118,9 @@ abstract class Repository implements
     /**
      * {@inheritDoc}
      */
-    public function paginate(int $limit = 50): LengthAwarePaginator
+    public function paginate(int $perPage = 50): LengthAwarePaginator
     {
-        return $this->builder()->paginate($limit);
+        return $this->builder()->paginate($perPage);
     }
 
     /**

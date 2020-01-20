@@ -232,7 +232,7 @@ trait Conditionable
     {
         $this->clausules = $this->model->newModelQuery();
         call_user_func($clausules, $this);
-        $this->getQuery()->addNestedWhereQuery($this->clausules->getQuery(), $operator);
+        $this->builder()->addNestedWhereQuery($this->clausules->getQuery(), $operator);
         $this->clausules = null;
         return $this;
     }

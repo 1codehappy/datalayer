@@ -33,10 +33,10 @@ interface RepositoryInterface
     /**
      * Paginate data
      *
-     * @param int $limit
+     * @param int $perPage
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function paginate(int $limit = 50): LengthAwarePaginator;
+    public function paginate(int $perPage = 50): LengthAwarePaginator;
 
     /**
      * New entry
